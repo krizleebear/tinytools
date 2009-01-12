@@ -1,6 +1,8 @@
 package tinytools.jsync;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.Hashtable;
 
 public class ShellScriptGenerator {
 
@@ -41,22 +43,50 @@ public class ShellScriptGenerator {
 		return sb.toString();
 	}
 	
-	private void appendCopy(StringBuilder sb, File f)
+	private void appendCopy(StringBuilder sb, File srcFile)
 	{
-		sb.append("cp -p \"");
-		sb.append(f.getAbsolutePath());
+		File destFile = new File(slaveDir, srcFile.getAbsolutePath().substring(masterDir.getAbsolutePath().length()));
+		
+		checkPathTo(sb, destFile);
+		
+		sb.append("cp -pv \"");
+		sb.append(escape(srcFile.getAbsolutePath()));
 		sb.append("\" \"");
 		
-		sb.append(slaveDir.getAbsolutePath());
-		sb.append(f.getAbsolutePath().substring(masterDir.getAbsolutePath().length()));
+		sb.append(escape(destFile.getAbsolutePath()));
 		
 		sb.append("\"\n");
 	}
 	
+	private String escape(String path)
+	{
+		return path.replace("`", "\\`").replace("\"", "\\\"");
+	}
+	
+	HashSet<String> createdDirectories = new HashSet<String>();
+	
+	private void checkPathTo(StringBuilder sb, File destFile) 
+	{
+		File destParent = destFile.getParentFile();
+		String destPath = destParent.getAbsolutePath();
+
+		if(destParent.exists()) //Zielpfad existiert bereits
+			return;
+		
+		if(createdDirectories.contains(destPath)) //Pfad wird von uns bereits im Shellskript angelegt
+			return;
+		
+		sb.append("mkdir -p \"");
+		sb.append(destPath);
+		sb.append("\"\n");
+		
+		createdDirectories.add(destPath); //Verzeichnis merken
+	}
+
 	private void appendDelete(StringBuilder sb, File f)
 	{
 		sb.append("rm \"");
-		sb.append(f.getAbsolutePath());
+		sb.append(escape(f.getAbsolutePath()));
 		sb.append("\"\n");
 	}
 }
