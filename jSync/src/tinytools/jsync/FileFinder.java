@@ -30,7 +30,7 @@ public class FileFinder {
 	
 	File rootDir;
 	String absoluteRootPath = "";
-	List<File> foundFiles = new ArrayList<File>();
+	int foundFileCount = 0;
 	HashMap<String, FileInfo> fileIndex = new HashMap<String, FileInfo>();
 	ChangeSet changes = new ChangeSet();
 	
@@ -49,7 +49,7 @@ public class FileFinder {
 		recursiveSearch(rootDir);
 
 		System.out.println();
-		System.out.println("Found "+foundFiles.size()+" files in "+absoluteRootPath);
+		System.out.println("Found "+foundFileCount+" files in "+absoluteRootPath);
 	}
 	
 	private void recursiveSearch(File dir)
@@ -57,18 +57,22 @@ public class FileFinder {
 		File[] entries = dir.listFiles();
 		for(File entry : entries)
 		{
-			foundFiles.add(entry);
+			if(entry.getName().startsWith(".")) //ignore hidden files
+				continue;
 			
-			//System.out.println(getRelativePath(entry));
-			fileIndex.put(getRelativePath(entry), new FileInfo(entry));
-			
-			if(foundFiles.size()%100==0)
-				System.out.print("."); //user feedback (still-alive)
-			
-			if(entry.isDirectory())
+			if(!entry.isDirectory()) //don`t add directories to found files
 			{
-				recursiveSearch(entry);
+				foundFileCount++;
+				fileIndex.put(getRelativePath(entry), new FileInfo(entry));
 			}
+			else
+			{
+				recursiveSearch(entry);  //recursive search in directories
+			}
+			
+			
+			if(foundFileCount%100==0)
+				System.out.print("."); //user feedback (still-alive)
 		}
 	}
 	
