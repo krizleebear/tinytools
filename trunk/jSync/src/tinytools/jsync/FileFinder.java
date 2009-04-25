@@ -28,11 +28,11 @@ public class FileFinder {
 		}
 	}
 	
-	File rootDir;
-	String absoluteRootPath = "";
-	int foundFileCount = 0;
-	HashMap<String, FileInfo> fileIndex = new HashMap<String, FileInfo>();
-	ChangeSet changes = new ChangeSet();
+	private File rootDir;
+	private String absoluteRootPath = "";
+	private int foundFileCount = 0;
+	private HashMap<String, FileInfo> fileIndex = new HashMap<String, FileInfo>();
+	private ChangeSet changes = new ChangeSet();
 	
 	public FileFinder(String path)
 	{
