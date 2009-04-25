@@ -42,19 +42,18 @@ public class VExplorer {
 			catch (IOException e) 
 			{
 				System.err.println("Error scanning path " + pathes[i]);
-//				e.printStackTrace();
 			}
 		}
 		
-		// run over the collected files
-		for(Entry<String, FileInfo> entry : fileIndex.entrySet())
+		HtmlGenerator generator = new HtmlGenerator(fileIndex);
+		try 
 		{
-			System.out.println(entry.getValue().tokenizeFilename());
+			generator.generate("index.html");
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
 		}
-		
 	}
-
-
-
 
 }
