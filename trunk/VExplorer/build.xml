@@ -8,7 +8,7 @@
     </target>
     <target name="compile" description="compile the Java source code to class files">
         <mkdir dir="bin"/>
-        <javac srcdir="src" destdir="bin"/>
+        <javac srcdir="src" destdir="bin" source="1.5" target="1.5" />
     </target>
     <target name="jar" depends="compile" description="create a Jar file for the application">
         <jar destfile="VExplorer.jar">
