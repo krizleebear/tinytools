@@ -7,14 +7,14 @@ public class FileInfo implements Comparable<FileInfo>
 	private File file = null;
 	private long lastModified = 0;
 	private long filesize = 0;
-	private String tokenizedFilename;
+	private String displayedName;
 	
 	public FileInfo(File f)
 	{
 		this.file = f;
 		this.lastModified = f.lastModified();
 		this.filesize = f.length();
-		this.tokenizedFilename = tokenizeFilename();
+		this.displayedName = tokenizeFilename();
 	}
 	
 	public boolean equals(FileInfo otherFileInfo)
@@ -22,6 +22,10 @@ public class FileInfo implements Comparable<FileInfo>
 		return this.lastModified==otherFileInfo.lastModified && this.filesize==otherFileInfo.filesize;
 	}
 	
+	/**
+	 * Replaces common tokenizers (e.g. ._-) to more spaces that are better legible to humans.
+	 * @return
+	 */
 	private String tokenizeFilename()
 	{
 		String name = file.getName();
@@ -40,9 +44,20 @@ public class FileInfo implements Comparable<FileInfo>
 		return name;
 	}
 	
+	/**
+	 * Moves suffixed articles (e.g. ,The) back to the front of the name 
+	 * @return
+	 */
+	private String normalizeArticle()
+	{
+		int commaIndex = displayedName.lastIndexOf(',');
+		
+		return null;
+	}
+	
 	public String getTokenizedFilename()
 	{
-		return tokenizedFilename;
+		return displayedName;
 	}
 	
 	public File getFile()
