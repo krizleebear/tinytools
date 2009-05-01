@@ -80,12 +80,6 @@ public class FileInfo implements Comparable<FileInfo>
 		return file;
 	}
 	
-//	public int compareTo(Object o) 
-//	{
-//		FileInfo other = (FileInfo) o;
-//		return file.getName().compareToIgnoreCase(other.file.getName());
-//	}
-
 	public int compareTo(FileInfo other) 
 	{
 		return file.getName().compareToIgnoreCase(other.file.getName());

@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,7 +40,7 @@ public class HtmlGenerator
 			FileInfo currentVideo = videos[i];
 
 			sb.append("<tr>\n");
-			sb.append("<td><img src='images/"+currentVideo.getDisplayedName()+".png'/></td>");
+			sb.append("<td align='center'><a class='pic' target='_blank' href='http://www.imdb.com/find?s=tt&q="+URLEncoder.encode(currentVideo.getDisplayedName())+"&x=0&y=0'><img src='images/"+currentVideo.getDisplayedName()+".png'/></a></td>");
 			
 			System.out.print(currentVideo.getDisplayedName());
 			sb.append("<td>");
@@ -87,6 +88,8 @@ public class HtmlGenerator
 		sb.append("	font-size: 72px;\n");
 		sb.append("	color: #000000;\n");
 		sb.append("}\n");
+		sb.append(".pic { font-color:white;font-size:3px }\n");
+		sb.append(".piccell { align:center }\n");
 		sb.append("-->\n");
 		sb.append("</style>\n");
 		sb.append("</head>\n");
