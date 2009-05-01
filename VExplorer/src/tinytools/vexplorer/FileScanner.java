@@ -48,10 +48,10 @@ public class FileScanner {
 		File[] entries = dir.listFiles();
 		for(File entry : entries)
 		{
-			if(entry.isHidden())
+			if(entry.isHidden() || entry.getName().startsWith(".")) //ignore hidden files
 				continue;
 			
-			if(entry.getName().startsWith(".")) //ignore hidden files
+			if(entry.getName().endsWith(".db")) //ignore windows thumbs.db
 				continue;
 			
 			if(!entry.isDirectory()) //don`t add directories to found files
