@@ -1,20 +1,21 @@
 package tinytools.vexplorer;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.Socket;
 import java.net.URL;
-import java.net.URLConnection;
-import java.net.UnknownHostException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class Update
 {
+	
+	private final static String UPDATE_TEMP_FILE = "VExplorer_update.jar";
 
 	/**
 	 * @param args
@@ -24,7 +25,31 @@ public class Update
 		Update update = new Update();
 		try
 		{
-			update.start();
+			int versionOnline = update.getOnlineVersionNumber();
+			System.out.println("Current version number: " +Props.VERSION_CURRENT);
+			
+			System.out.println("Version number online available: " + versionOnline);
+			
+			try
+			{
+				System.out.println("Current checksum: " +calculateChecksum(new File("VExplorer.jar")));	
+				//calculateChecksum(new File(UPDATE_TEMP_FILE));
+			}
+			catch (NoSuchAlgorithmException e)
+			{
+				e.printStackTrace();
+			}
+			
+			if(versionOnline > Props.VERSION_CURRENT)
+			{
+				System.out.println("This software needs an update. Downloading most current version.");
+				Update.download(new URL(Props.UPDATE_URL), new File(UPDATE_TEMP_FILE));
+				System.out.println("Updated version was downloaded to a temporary file.");
+			}
+			else
+			{
+				System.out.println("We're up to date.");
+			}
 		}
 		catch (IOException e)
 		{
@@ -32,36 +57,70 @@ public class Update
 		}
 	}
 	
-	public int getVersionNumber()
+	public int getOnlineVersionNumber() throws IOException
 	{
+		URL url = new URL(Props.VERSION_ONLINE_URL);
 		
-		
-		return 0;
-	}
-
-	public void start() throws IOException
-	{
-		URL url = new URL("http://tinytools.googlecode.com/svn/");
-		URLConnection conn = url.openConnection();
-		//conn.setDoOutput(true);
-		
-		OutputStream out = conn.getOutputStream();
-		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out));
-
-		String request = "<?xml version=\"1.0\" encoding=\"utf-8\"?><propfind xmlns=\"DAV:\"><prop><version-controlled-configuration xmlns=\"DAV:\"/><resourcetype xmlns=\"DAV:\"/><baseline-relative-path xmlns=\"http://subversion.tigris.org/xmlns/dav/\"/><repository-uuid xmlns=\"http://subversion.tigris.org/xmlns/dav/\"/></prop></propfind>";
-
-		writer.write(request);
-		writer.close();
-
-		BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-
-		String decodedString;
-
-		while ((decodedString = in.readLine()) != null)
-		{
-			System.out.println(decodedString);
-		}
+		BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+		String line = in.readLine();
 		in.close();
+		
+		return Integer.parseInt(line);
+	}
+	
+	public int getOnlineChecksum() throws IOException
+	{
+		URL url = new URL(Props.VERSION_ONLINE_URL);
+		
+		BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+		String line = in.readLine();
+		in.close();
+		
+		return Integer.parseInt(line);
 	}
 
+	public static void download(URL url, File file) throws IOException
+	{
+		//delete an old existing temp file
+		if(file.exists())
+			file.delete();
+		
+		BufferedInputStream in = new BufferedInputStream(url.openStream());
+		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
+		
+		int i;
+        while ((i = in.read()) != -1)
+        {
+           out.write( i );
+        }
+        
+        in.close();
+        out.close();
+	}
+	
+	public static String calculateChecksum(File f) throws IOException, NoSuchAlgorithmException
+	{
+		MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+		BufferedInputStream in = new BufferedInputStream(new FileInputStream(f));
+		
+		int i;
+        while ((i = in.read()) != -1)
+        {
+           digest.update((byte)i);
+        }
+        
+        byte[] hash = digest.digest();
+        String hashString = getHexString(hash);
+        return hashString;
+	}
+	
+	public static String getHexString(byte[] bytes)
+	{
+		String result = "";
+		for (int i = 0; i < bytes.length; i++)
+		{
+			result += Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1);
+		}
+		return result;
+	}
 }
