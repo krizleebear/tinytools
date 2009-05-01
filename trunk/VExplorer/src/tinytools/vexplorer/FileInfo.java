@@ -14,7 +14,8 @@ public class FileInfo implements Comparable<FileInfo>
 		this.file = f;
 		this.lastModified = f.lastModified();
 		this.filesize = f.length();
-		this.displayedName = tokenizeFilename();
+		displayedName = tokenizeFilename();
+		displayedName = normalizeArticle();
 	}
 	
 	public boolean equals(FileInfo otherFileInfo)
@@ -44,6 +45,8 @@ public class FileInfo implements Comparable<FileInfo>
 		return name;
 	}
 	
+	private static final String[] articles = {"der", "die", "das", "the", "eine"};
+	
 	/**
 	 * Moves suffixed articles (e.g. ,The) back to the front of the name 
 	 * @return
@@ -51,11 +54,23 @@ public class FileInfo implements Comparable<FileInfo>
 	private String normalizeArticle()
 	{
 		int commaIndex = displayedName.lastIndexOf(',');
+		if(commaIndex<0)
+			return displayedName;
 		
-		return null;
+		String end = displayedName.substring(commaIndex+1).trim(); //+1 (might be painful - indexbounds!)
+		
+		for (int i = 0; i < articles.length; i++)
+		{
+			if(articles[i].equalsIgnoreCase(end))
+			{
+				displayedName = end + " " + displayedName.substring(0, commaIndex);
+			}
+		}
+		
+		return displayedName;
 	}
 	
-	public String getTokenizedFilename()
+	public String getDisplayedName()
 	{
 		return displayedName;
 	}
