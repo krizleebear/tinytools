@@ -127,6 +127,7 @@ public class PosterGrabber
 	private String escapeKeyword(String keyword)
 	{
 		keyword = keyword.replace(",", "%2C");
+		keyword = keyword.replace(" ", "+");
 		return keyword;
 	}
 
@@ -169,12 +170,10 @@ public class PosterGrabber
 		}
 		catch (IOException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		catch (SAXException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
