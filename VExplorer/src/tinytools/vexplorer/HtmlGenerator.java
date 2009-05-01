@@ -32,28 +32,38 @@ public class HtmlGenerator
 	{
 		writeHeader();
 		
+		sb.append("<table width='100%'><tr><td width='120'>&nbsp;</td><td>&nbsp;</td></tr>\n");
+		
 		for (int i = 0; i < videos.length; i++) 
 		{
 			FileInfo currentVideo = videos[i];
+
+			sb.append("<tr>\n");
+			sb.append("<td><img src='images/"+currentVideo.getDisplayedName()+".png'/></td>");
 			
-			System.out.print(currentVideo.getTokenizedFilename());
-			sb.append("<a href=\""+currentVideo.getFile().toURI().toString()+"\">"+currentVideo.getTokenizedFilename()+"</a>");
+			System.out.print(currentVideo.getDisplayedName());
+			sb.append("<td>");
+			sb.append("<a href=\""+currentVideo.getFile().toURI().toString()+"\">"+currentVideo.getDisplayedName()+"</a>");
 			
 			//check next entry to see if it has the same tokenized filename
 			//that's our indicator to recognize multipart videos
 			int consecutivePartIndex = 1;
 			String nextName = getNextName(i);
-			while(nextName.equals(currentVideo.getTokenizedFilename()))
+			while(nextName.equals(currentVideo.getDisplayedName()))
 			{
 				System.out.print( " [" + ++consecutivePartIndex + "]");
 				sb.append(" <a href=\""+getNextFile(i).toURI().toString()+"\">["+consecutivePartIndex+"]</a>");
 				i++;
 				nextName = getNextName(i);
 			}
-			
 			System.out.println();
-			sb.append("<br/>\n");
+			
+			//sb.append("<br/>\n");
+			sb.append("</td>\n");
+			sb.append("</tr>\n");
 		}
+		
+		sb.append("</table>\n");
 		
 		writeFooter();
 		
@@ -102,7 +112,7 @@ public class HtmlGenerator
 	{
 		if(currentIndex < videos.length-1)
 		{
-			return videos[currentIndex+1].getTokenizedFilename();
+			return videos[currentIndex+1].getDisplayedName();
 		}
 		return "";
 	}
