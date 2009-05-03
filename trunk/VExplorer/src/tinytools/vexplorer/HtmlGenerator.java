@@ -83,11 +83,7 @@ public class HtmlGenerator
 		sb.append("<title>Video Index</title>\n");
 		sb.append("<style type=\"text/css\">\n");
 		sb.append("<!--\n");
-		sb.append("a {\n");
-		sb.append("	font-family: Arial, Helvetica, sans-serif;\n");
-		sb.append("	font-size: 72px;\n");
-		sb.append("	color: #000000;\n");
-		sb.append("}\n");
+		sb.append("a { font-family: Arial, Helvetica, sans-serif; font-size: 72px; color: #000000; border: 0; }\n");
 		sb.append(".pic { font-color:white;font-size:3px }\n");
 		sb.append(".piccell { align:center }\n");
 		sb.append("-->\n");
