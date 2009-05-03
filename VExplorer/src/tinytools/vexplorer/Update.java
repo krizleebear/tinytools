@@ -8,52 +8,71 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class Update
 {
-	
 	private final static String UPDATE_TEMP_FILE = "VExplorer_update.jar";
+	
+	private int onlineVersion = 0;
+	private String currentChecksum = "";
+	private String onlineChecksum = " ";
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args)
+	public Update() throws IOException
 	{
-		Update update = new Update();
+		onlineVersion = getOnlineVersionNumber();
+		onlineChecksum = getOnlineChecksum();
+
 		try
 		{
-			int versionOnline = update.getOnlineVersionNumber();
-			System.out.println("Current version number: " +Props.VERSION_CURRENT);
-			
-			System.out.println("Version number online available: " + versionOnline);
-			
-			try
-			{
-				System.out.println("Current checksum: " +calculateChecksum(new File("VExplorer.jar")));	
-				//calculateChecksum(new File(UPDATE_TEMP_FILE));
-			}
-			catch (NoSuchAlgorithmException e)
-			{
-				e.printStackTrace();
-			}
-			
-			if(versionOnline > Props.VERSION_CURRENT)
-			{
-				System.out.println("This software needs an update. Downloading most current version.");
-				Update.download(new URL(Props.UPDATE_URL), new File(UPDATE_TEMP_FILE));
-				System.out.println("Updated version was downloaded to a temporary file.");
-			}
-			else
-			{
-				System.out.println("We're up to date.");
-			}
+			currentChecksum = calculateChecksum(new File("VExplorer.jar"));
 		}
-		catch (IOException e)
+		catch (NoSuchAlgorithmException e)
 		{
 			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * @param args
+	 * @throws IOException 
+	 * @throws MalformedURLException 
+	 */
+	public static void main(String[] args) throws MalformedURLException, IOException
+	{
+		Update update = new Update();
+		if(update.isUpdateNeeded())
+		{
+			update.download();
+			update.update();
+		}
+	}
+	
+	public void update() throws MalformedURLException, IOException
+	{
+		//copy temp file to active file
+	}
+	
+	public boolean isUpdateNeeded()
+	{
+		System.out.println("Current checksum: " + currentChecksum);
+		System.out.println("Online checksum : " + onlineChecksum);
+
+		System.out.println("Current version number: " + Props.VERSION_CURRENT);
+		System.out.println("Online version number : " + onlineVersion);
+		
+		if(onlineVersion > Props.VERSION_CURRENT)
+		{
+			System.out.println("This software needs an update. Downloading most current version.");
+			return true;
+		}
+		else
+		{
+			System.out.println("We're up to date.");
+			return false;
 		}
 	}
 	
@@ -68,15 +87,21 @@ public class Update
 		return Integer.parseInt(line);
 	}
 	
-	public int getOnlineChecksum() throws IOException
+	public String getOnlineChecksum() throws IOException
 	{
-		URL url = new URL(Props.VERSION_ONLINE_URL);
+		URL url = new URL(Props.CHECKSUM_ONLINE_URL);
 		
 		BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
 		String line = in.readLine();
 		in.close();
 		
-		return Integer.parseInt(line);
+		return line;
+	}
+	
+	public void download() throws MalformedURLException, IOException
+	{
+		download(new URL(Props.UPDATE_URL), new File(UPDATE_TEMP_FILE));
+		System.out.println("Updated version was downloaded to a temporary file.");
 	}
 
 	public static void download(URL url, File file) throws IOException
