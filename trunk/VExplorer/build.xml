@@ -1,25 +1,47 @@
 <?xml version="1.0"?>
-<project name="VExplorer" default="jar">
+<project name="VExplorer" default="release">
 	
 	<property name="releasedir" value="releases/" />
+	<property name="jarFile" value="VExplorer.jar"/>
+	<property name="updateJarFile" value="Update.jar"/>
+	<property name="libdir" value="lib/"/>
 	
     <target name="clean" description="remove intermediate files">
         <delete dir="bin"/>
     </target>
-    <target name="clobber" depends="clean" description="remove all artifact files">
-        <delete file="hello.jar"/>
-    </target>
+    	
     <target name="compile" description="compile the Java source code to class files">
         <mkdir dir="bin"/>
         <javac srcdir="src" destdir="bin" source="1.5" target="1.5" />
     </target>
+	
     <target name="jar" depends="compile" description="create a Jar file for the application">
-        <jar destfile="${releasedir}VExplorer.jar">
+        <jar destfile="${releasedir}${jarFile}">
             <fileset dir="bin" includes="**/*.class"/>
             <manifest>
                 <attribute name="Main-Class" value="tinytools.vexplorer.VExplorer"/>
             </manifest>
         </jar>
-    	<checksum todir="${releasedir}" file="${releasedir}/VExplorer.jar"/>
     </target>
+	
+	<target name="updateJar" depends="compile" description="create the Update.jar file for the application">
+        <jar destfile="${releasedir}${updateJarFile}">
+            <fileset dir="bin" includes="**/Update.class"/>
+            <manifest>
+                <attribute name="Main-Class" value="tinytools.vexplorer.Update"/>
+            </manifest>
+        </jar>
+    </target>
+	
+	<target name="release" depends="updateJar, jar">
+		<copy todir="${releasedir}">
+			<fileset dir="${libdir}" />
+		</copy>
+		<checksum>
+			<fileset dir="${releasedir}">
+				<include name="*.jar"/>
+			</fileset>
+		</checksum>
+	</target>
+	
 </project>
