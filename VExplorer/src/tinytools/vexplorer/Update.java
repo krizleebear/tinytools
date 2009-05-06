@@ -102,6 +102,8 @@ public class Update
 	{
 		download(new URL(Props.UPDATE_URL), new File(UPDATE_TEMP_FILE));
 		System.out.println("Updated version was downloaded to a temporary file.");
+		
+		//verify the checksum
 	}
 
 	public static void download(URL url, File file) throws IOException

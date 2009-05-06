@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
 <project name="VExplorer" default="jar">
+	
+	<property name="releasedir" value="releases/" />
+	
     <target name="clean" description="remove intermediate files">
         <delete dir="bin"/>
     </target>
@@ -11,11 +14,12 @@
         <javac srcdir="src" destdir="bin" source="1.5" target="1.5" />
     </target>
     <target name="jar" depends="compile" description="create a Jar file for the application">
-        <jar destfile="VExplorer.jar">
+        <jar destfile="${releasedir}VExplorer.jar">
             <fileset dir="bin" includes="**/*.class"/>
             <manifest>
                 <attribute name="Main-Class" value="tinytools.vexplorer.VExplorer"/>
             </manifest>
         </jar>
+    	<checksum todir="${releasedir}" file="${releasedir}/VExplorer.jar"/>
     </target>
 </project>
