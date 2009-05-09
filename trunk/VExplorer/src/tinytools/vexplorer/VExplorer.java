@@ -11,6 +11,8 @@ import org.xml.sax.SAXException;
 public class VExplorer 
 {
 	private static final String DIRECTORY_IMAGES = "./images/";
+	private String[] pathes = null;
+	private HashMap<String, FileInfo> fileIndex = new HashMap<String, FileInfo>();
 
 	/**
 	 * @param args
@@ -26,9 +28,6 @@ public class VExplorer
 		VExplorer ve = new VExplorer(args);
 		ve.start();
 	}
-
-	private String[] pathes = null;
-	private HashMap<String, FileInfo> fileIndex = new HashMap<String, FileInfo>();
 
 	public VExplorer(String[] pathes)
 	{
