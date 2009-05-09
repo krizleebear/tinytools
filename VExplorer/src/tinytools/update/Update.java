@@ -5,6 +5,7 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -52,8 +53,15 @@ public class Update
 	public void update(File tempFile, File destFile) throws MalformedURLException, IOException
 	{
 		//copy temp file to active file
-		destFile.renameTo(new File(destFile.getAbsolutePath()+"_OLD"));
-		tempFile.renameTo(destFile);
+		if(destFile.exists())
+		{
+			File backupFile = new File(destFile.getAbsolutePath()+"_OLD");
+			System.out.println("Creating backup of current version: " + backupFile.getAbsolutePath());
+			moveFile(destFile, backupFile, Overwrite.Overwrite);
+		}
+		
+		System.out.println("Renaming tempfile to " + destFile.getAbsolutePath());
+		moveFile(tempFile, destFile, Overwrite.Overwrite);
 	}
 	
 	public boolean isUpdateNeeded() throws IOException
@@ -102,7 +110,7 @@ public class Update
 	public File download() throws MalformedURLException, IOException, NoSuchAlgorithmException
 	{
 		System.out.println("Creating temporary file.");
-		File localTempFile = File.createTempFile("tintytools_update", "_temp");
+		File localTempFile = File.createTempFile("tintytools_update", "_temp", new File("."));
 		
 		System.out.println("Downloading current version to temporary file " + localTempFile.getAbsolutePath());
 		download(remoteURL, localTempFile);
@@ -150,6 +158,8 @@ public class Update
            digest.update((byte)i);
         }
         
+        in.close();
+        
         byte[] hash = digest.digest();
         String hashString = getHexString(hash);
         return hashString;
@@ -163,5 +173,38 @@ public class Update
 			result += Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1);
 		}
 		return result;
+	}
+	
+	public static void copyFile(File source, File dest) throws IOException
+	{		
+		BufferedInputStream in = new BufferedInputStream(new FileInputStream(source));
+		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(dest));
+		
+		int i;
+        while ((i = in.read()) != -1)
+        {
+           out.write( i );
+        }
+        
+        in.close();
+        out.close();
+	}
+	
+	public enum Overwrite { Overwrite, DontOverwrite }
+	
+	public static void moveFile(File source, File dest, Overwrite overwrite) throws IOException
+	{
+		boolean success = false;
+		
+		if(dest.exists() && overwrite == Overwrite.Overwrite)
+		{
+			success = dest.delete();
+			if(!success)
+				throw new IOException("Could not overwrite " + dest.getAbsolutePath());
+		}
+		
+		success = source.renameTo(dest);
+		if(!success)
+			throw new IOException(source.getAbsolutePath() + " could not be moved to " + dest.getAbsolutePath());
 	}
 }
