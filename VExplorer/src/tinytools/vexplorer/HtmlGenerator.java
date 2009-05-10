@@ -40,7 +40,7 @@ public class HtmlGenerator
 			FileInfo currentVideo = videos[i];
 
 			sb.append("<tr>\n");
-			sb.append("<td align='center'><a class='pic' target='_blank' href='http://www.imdb.com/find?s=tt&q="+URLEncoder.encode(currentVideo.getDisplayedName())+"&x=0&y=0'><img src='images/"+currentVideo.getDisplayedName()+".png'/></a></td>");
+			sb.append("<td align='center'><a class='pic' target='_blank' href='http://www.imdb.com/find?s=tt&q="+URLEncoder.encode(currentVideo.getDisplayedName())+"&x=0&y=0'><img border='0' src='images/"+currentVideo.getDisplayedName()+".png'/></a></td>");
 			
 			System.out.print(currentVideo.getDisplayedName());
 			sb.append("<td>");
@@ -83,8 +83,8 @@ public class HtmlGenerator
 		sb.append("<title>Video Index</title>\n");
 		sb.append("<style type=\"text/css\">\n");
 		sb.append("<!--\n");
-		sb.append("a { font-family: Arial, Helvetica, sans-serif; font-size: 72px; color: #000000; border: 0; }\n");
-		sb.append(".pic { font-color:white;font-size:3px }\n");
+		sb.append("a { font-family: Arial, Helvetica, sans-serif; font-size: 72px; color:#000000; }\n");
+		sb.append(".pic { font-color:white; font-size:3px; }\n");
 		sb.append(".piccell { align:center }\n");
 		sb.append("-->\n");
 		sb.append("</style>\n");
