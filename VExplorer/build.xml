@@ -9,7 +9,7 @@
     <target name="clean" description="remove intermediate files">
         <delete dir="bin"/>
     </target>
-    	
+	
     <target name="compile" description="compile the Java source code to class files">
         <mkdir dir="bin"/>
         <javac srcdir="src" destdir="bin" source="1.5" target="1.5" />
@@ -29,6 +29,7 @@
             <fileset dir="bin" includes="**/Update.class"/>
             <manifest>
                 <attribute name="Main-Class" value="tinytools.vexplorer.UpdateMain"/>
+            	<attribute name="Class-Path" value="tagsoup-1.2.jar"/>
             </manifest>
         </jar>
     </target>

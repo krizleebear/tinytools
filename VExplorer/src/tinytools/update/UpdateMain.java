@@ -87,7 +87,7 @@ public class UpdateMain
 	private static int getRemoteVersionNumber(URL updatePropertyURL)
 			throws IOException, FileNotFoundException
 	{
-		File updatePropertyFileOnline =  new File(UPDATE_PROPERTIES_FILE+"_online"); 
+		File updatePropertyFileOnline = new File(UPDATE_PROPERTIES_FILE+"_online"); 
 		updatePropertyFileOnline.deleteOnExit();
 		
 		Update.download(updatePropertyURL, updatePropertyFileOnline);
@@ -96,7 +96,7 @@ public class UpdateMain
 		onlineProps.load(onlinePropsStream);
 		onlinePropsStream.close();
 		
-		String versionString = onlineProps.getProperty("VERSION", "-1");
+		String versionString = onlineProps.getProperty("Version", "-1");
 		int version = -1;
 		try { version = Integer.parseInt(versionString); } catch(Exception ex) {}
 		
