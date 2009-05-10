@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
@@ -32,14 +33,35 @@ public class UpdateMain
 		{
 			System.out.println("Alternative usage: Update <remoteURL> <localFile>");
 			
+			// reading local update properties
 			Properties props = new Properties();
-			props.load(new FileInputStream(UPDATE_PROPERTIES_FILE));
+			InputStream propIn = new FileInputStream(UPDATE_PROPERTIES_FILE);
+			props.load(propIn);
+			propIn.close();
 			
+			// fetching local version number
+			String versionString = props.getProperty("VERSION", "0");
+			int localVersionNumber = 0;
+			try { localVersionNumber = Integer.parseInt(versionString); } catch(Exception ex) {}
+			System.out.println("Local version number: " + localVersionNumber);
+			
+			// reading remote base URL 
 			String baseURL = props.getProperty("BaseURL", "http://tinytools.googlecode.com/svn/trunk/VExplorer/releases/");
 			
-			//first update Update.properties
-			System.out.println("Updating " + UPDATE_PROPERTIES_FILE);
+			// fetching the remote version number 
 			URL updatePropertyURL = new URL(baseURL + UPDATE_PROPERTIES_FILE);
+			int remoteVersionNumber = getRemoteVersionNumber(updatePropertyURL);
+			System.out.println("Remote version number: " + remoteVersionNumber);
+
+			if(localVersionNumber >= remoteVersionNumber)
+			{
+				System.out.println("Local version is up to date. Cancelling update.");
+				System.exit(0);
+			}
+			
+			//start with updating Update.properties
+			System.out.println("------------------------------------------------------------------------------------");
+			System.out.println("Updating " + UPDATE_PROPERTIES_FILE);
 			Update propUpdate = new Update(updatePropertyURL, new File(UPDATE_PROPERTIES_FILE));
 			propUpdate.update(Backup.CreateBackup);
 			
@@ -60,6 +82,25 @@ public class UpdateMain
 			update = new Update(new URL(args[0]), localFile);
 			update.update(Backup.CreateBackup);
 		}
+	}
+
+	private static int getRemoteVersionNumber(URL updatePropertyURL)
+			throws IOException, FileNotFoundException
+	{
+		File updatePropertyFileOnline =  new File(UPDATE_PROPERTIES_FILE+"_online"); 
+		updatePropertyFileOnline.deleteOnExit();
+		
+		Update.download(updatePropertyURL, updatePropertyFileOnline);
+		Properties onlineProps = new Properties();
+		FileInputStream onlinePropsStream = new FileInputStream(updatePropertyFileOnline);
+		onlineProps.load(onlinePropsStream);
+		onlinePropsStream.close();
+		
+		String versionString = onlineProps.getProperty("VERSION", "-1");
+		int version = -1;
+		try { version = Integer.parseInt(versionString); } catch(Exception ex) {}
+		
+		return version;
 	}
 	
 	private static List<String> getFilesToUpdate(Properties props) throws FileNotFoundException, IOException
