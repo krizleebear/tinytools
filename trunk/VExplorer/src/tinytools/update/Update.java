@@ -33,10 +33,21 @@ public class Update
 		this.localFile = localFile;
 	}
 	
-	public void update(File tempFile, File destFile) throws MalformedURLException, IOException
+	public void update(Backup createBackup) throws IOException, NoSuchAlgorithmException
 	{
-		//copy temp file to active file
-		if(destFile.exists())
+		if(isUpdateNeeded())
+		{
+			File tempFile = download();
+			replaceFile(tempFile, localFile, createBackup);
+		}
+	}
+	
+	public enum Backup { CreateBackup, DontCreateBackup }
+	
+	private void replaceFile(File tempFile, File destFile, Backup createBackup) throws MalformedURLException, IOException
+	{
+		//copy temporary file to active file
+		if(destFile.exists() && createBackup == Backup.CreateBackup)
 		{
 			File backupFile = new File(destFile.getAbsolutePath()+"_OLD");
 			System.out.println("Creating backup of current version: " + backupFile.getAbsolutePath());
@@ -47,7 +58,7 @@ public class Update
 		moveFile(tempFile, destFile, Overwrite.Overwrite);
 	}
 	
-	public boolean isUpdateNeeded() throws IOException
+	private boolean isUpdateNeeded() throws IOException
 	{
 		URL checksumURL = new URL(remoteURL.toString()+".MD5");
 		System.out.println("Getting remote checksum from " + checksumURL.toString());
@@ -81,7 +92,7 @@ public class Update
 		}
 	}
 	
-	public String getOnlineChecksum(URL checksumURL) throws IOException
+	public static String getOnlineChecksum(URL checksumURL) throws IOException
 	{
 		BufferedReader in = new BufferedReader(new InputStreamReader(checksumURL.openStream()));
 		String line = in.readLine();
@@ -90,7 +101,7 @@ public class Update
 		return line;
 	}
 	
-	public File download() throws MalformedURLException, IOException, NoSuchAlgorithmException
+	private File download() throws MalformedURLException, IOException, NoSuchAlgorithmException
 	{
 		System.out.println("Creating temporary file.");
 		File localTempFile = File.createTempFile("tintytools_update", "_temp", new File("."));
@@ -190,4 +201,5 @@ public class Update
 		if(!success)
 			throw new IOException(source.getAbsolutePath() + " could not be moved to " + dest.getAbsolutePath());
 	}
+	
 }
