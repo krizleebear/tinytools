@@ -64,7 +64,9 @@ public class VExplorer
 
 	private void readConfig(File configFile) throws FileNotFoundException, IOException
 	{
-		props.load(new FileInputStream(configFile));
+		FileInputStream propsIn = new FileInputStream(configFile);
+		props.load(propsIn);
+		propsIn.close();
 		
 		List<String> videoPathes = new ArrayList<String>();
 		

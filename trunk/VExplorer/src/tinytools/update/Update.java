@@ -5,7 +5,6 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,10 +12,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
 
 public class Update
 {
@@ -105,6 +100,7 @@ public class Update
 	{
 		System.out.println("Creating temporary file.");
 		File localTempFile = File.createTempFile("tintytools_update", "_temp", new File("."));
+		localTempFile.deleteOnExit();
 		
 		System.out.println("Downloading current version to temporary file " + localTempFile.getAbsolutePath());
 		download(remoteURL, localTempFile);
@@ -122,41 +118,69 @@ public class Update
 		return localTempFile;
 	}
 
-	public static void download(URL url, File file) throws IOException
+	public static void download(URL url, File destFile) throws IOException
 	{
-		//delete an old existing temp file
-		if(file.exists())
-			file.delete();
+		//delete an old existing temporary file
+		if(destFile.exists())
+			destFile.delete();
 		
-		BufferedInputStream in = new BufferedInputStream(url.openStream());
-		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
+		BufferedInputStream in = null;
+		BufferedOutputStream out = null;
 		
-		int i;
-        while ((i = in.read()) != -1)
-        {
-           out.write( i );
-        }
-        
-        in.close();
-        out.close();
+		try
+		{
+			in = new BufferedInputStream(url.openStream());
+			out = new BufferedOutputStream(new FileOutputStream(destFile));
+			
+			int i;
+	        while ((i = in.read()) != -1)
+	        {
+	           out.write( i );
+	        }
+		}
+		finally
+		{
+			try
+			{
+				if (in != null)
+					in.close();
+			}
+			catch (Exception ex1) {} //ignore
+
+			try
+			{
+				if (out != null)
+					out.close();
+			}
+			catch (Exception ex2) {} //ignore
+		}
 	}
 	
-	public static String calculateChecksum(File f) throws IOException, NoSuchAlgorithmException
+	public static String calculateChecksum(File f) throws IOException,
+			NoSuchAlgorithmException
 	{
 		MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
-		BufferedInputStream in = new BufferedInputStream(new FileInputStream(f));
+		BufferedInputStream in = null;
 		
-		int i;
-        while ((i = in.read()) != -1)
-        {
-           digest.update((byte)i);
-        }
-        
-        in.close();
-        
-        byte[] hash = digest.digest();
-        String hashString = getHexString(hash);
-        return hashString;
+		try
+		{
+			in = new BufferedInputStream(new FileInputStream(f));
+
+			int i;
+			while ((i = in.read()) != -1)
+			{
+				digest.update((byte) i);
+			}
+		}
+		finally
+		{
+			if (in != null)
+				in.close();
+		}
+
+		byte[] hash = digest.digest();
+		String hashString = getHexString(hash);
+		return hashString;
 	}
 	
 	public static String getHexString(byte[] bytes)
