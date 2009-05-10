@@ -13,6 +13,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 
 public class Update
 {
@@ -22,32 +26,11 @@ public class Update
 	private URL remoteURL = null;
 	private File localFile = null;
 	
+	
 	public Update(URL remoteURL, File localFile)
 	{
 		this.remoteURL = remoteURL;
 		this.localFile = localFile;
-	}
-	
-	/**
-	 * @param args
-	 * @throws IOException 
-	 * @throws MalformedURLException 
-	 * @throws NoSuchAlgorithmException 
-	 */
-	public static void main(String[] args) throws MalformedURLException, IOException, NoSuchAlgorithmException
-	{
-		if(args.length < 2)
-		{
-			System.err.println("Usage: Update <remoteURL> <localFile>");
-			System.exit(0);
-		}
-		
-		Update update = new Update(new URL(args[0]), new File(args[1]));
-		if(update.isUpdateNeeded())
-		{
-			File tempFile = update.download();
-			update.update(tempFile, update.localFile);
-		}
 	}
 	
 	public void update(File tempFile, File destFile) throws MalformedURLException, IOException

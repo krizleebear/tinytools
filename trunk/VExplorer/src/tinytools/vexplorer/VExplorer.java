@@ -1,50 +1,99 @@
 package tinytools.vexplorer;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import org.xml.sax.SAXException;
 
-public class VExplorer 
+public class VExplorer
 {
 	private static final String DIRECTORY_IMAGES = "./images/";
 	private String[] pathes = null;
 	private HashMap<String, FileInfo> fileIndex = new HashMap<String, FileInfo>();
+	private Properties props = new Properties();
 
 	/**
 	 * @param args
+	 * @throws IOException
+	 * @throws FileNotFoundException
 	 */
-	public static void main(String[] args) {
-		
-		if(args.length != 1)
+	public static void main(String[] args) throws FileNotFoundException,
+			IOException
+	{
+
+		VExplorer ve;
+
+		if (args.length == 0)
+		{
+			System.out.println("Usage:");
+			System.out.println();
+			System.out.println("VExplorer [<path to video files>] [<path to video files>...]");
+			System.out.println("No pathes defined. Try reading configuration from Config.properties");
+
+			ve = new VExplorer(new File("Config.properties"));
+			ve.start();
+
+		}
+		if (args.length >= 1)
 		{
 			System.out.println("Usage: VExplorer <path to video files> [<path to video files>...]");
-			System.exit(1);
+			ve = new VExplorer(args);
+			ve.start();
 		}
-		
-		VExplorer ve = new VExplorer(args);
-		ve.start();
+
 	}
 
 	public VExplorer(String[] pathes)
 	{
 		this.pathes = pathes;
 	}
-	
-	private void start() 
+
+	public VExplorer(File configFile) throws FileNotFoundException, IOException
+	{
+		readConfig(configFile);
+	}
+
+	private void readConfig(File configFile) throws FileNotFoundException, IOException
+	{
+		props.load(new FileInputStream(configFile));
+		
+		List<String> videoPathes = new ArrayList<String>();
+		
+		//get all keys starting with 'VideoPath'
+		Set keys = props.keySet();
+		for(Object o : keys)
+		{
+			String key = (String)o;
+			if(key.startsWith("VideoPath"))
+			{
+				String path = (String) props.get(key);
+				System.out.println("Adding videopath: " + path);
+				videoPathes.add( path );
+			}
+		}
+		this.pathes = videoPathes.toArray(new String[0]);
+	}
+
+	private void start()
 	{
 		// scan directories
 		scanForFiles();
-		
+
 		// create HTML index
 		generateHTML();
-		
+
 		// check if target directores exist - create them if not
 		checkDirectories();
-		
+
 		// browse the web for posters
 		downloadPosters();
 	}
@@ -53,7 +102,7 @@ public class VExplorer
 	{
 		// check for image directory
 		File posterDirectory = new File(DIRECTORY_IMAGES);
-		if(!posterDirectory.exists())
+		if (!posterDirectory.exists())
 		{
 			try
 			{
@@ -61,7 +110,8 @@ public class VExplorer
 			}
 			catch (Exception e1)
 			{
-				System.err.println(posterDirectory.getAbsolutePath() + " could not be created.");
+				System.err.println(posterDirectory.getAbsolutePath()
+						+ " could not be created.");
 			}
 		}
 	}
@@ -70,11 +120,11 @@ public class VExplorer
 	{
 		PosterGrabber grabber = new PosterGrabber(new File(DIRECTORY_IMAGES));
 		FileInfo[] videos = fileIndex.values().toArray(new FileInfo[0]);
-		
-		for (int i = 0; i < videos.length; i++) 
+
+		for (int i = 0; i < videos.length; i++)
 		{
 			FileInfo currentVideo = videos[i];
-		
+
 			try
 			{
 				grabber.searchForPoster(currentVideo.getDisplayedName());
@@ -93,11 +143,11 @@ public class VExplorer
 	private void generateHTML()
 	{
 		HtmlGenerator generator = new HtmlGenerator(fileIndex);
-		try 
+		try
 		{
 			generator.generate("index.html");
-		} 
-		catch (IOException e) 
+		}
+		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
@@ -108,11 +158,11 @@ public class VExplorer
 		for (int i = 0; i < pathes.length; i++)
 		{
 			FileScanner scanner = new FileScanner(pathes[i], fileIndex);
-			try 
+			try
 			{
 				scanner.indexFiles();
-			} 
-			catch (IOException e) 
+			}
+			catch (IOException e)
 			{
 				System.err.println("Error scanning path " + pathes[i]);
 			}

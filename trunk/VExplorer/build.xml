@@ -28,7 +28,7 @@
         <jar destfile="${releasedir}${updateJarFile}">
             <fileset dir="bin" includes="**/Update.class"/>
             <manifest>
-                <attribute name="Main-Class" value="tinytools.vexplorer.Update"/>
+                <attribute name="Main-Class" value="tinytools.vexplorer.UpdateMain"/>
             </manifest>
         </jar>
     </target>
@@ -36,10 +36,14 @@
 	<target name="release" depends="updateJar, jar">
 		<copy todir="${releasedir}">
 			<fileset dir="${libdir}" />
+			<fileset dir=".">
+				<include name="*.properties"/>
+			</fileset>
 		</copy>
 		<checksum>
 			<fileset dir="${releasedir}">
 				<include name="*.jar"/>
+				<include name="*.properties"/>
 			</fileset>
 		</checksum>
 	</target>
