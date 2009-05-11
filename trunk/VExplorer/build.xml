@@ -26,9 +26,9 @@
 	
 	<target name="updateJar" depends="compile" description="create the Update.jar file for the application">
         <jar destfile="${releasedir}${updateJarFile}">
-            <fileset dir="bin" includes="**/Update.class"/>
+            <fileset dir="bin" includes="tinytools/update/*.*"/>
             <manifest>
-                <attribute name="Main-Class" value="tinytools.vexplorer.UpdateMain"/>
+                <attribute name="Main-Class" value="tinytools.update.UpdateMain"/>
             	<attribute name="Class-Path" value="tagsoup-1.2.jar"/>
             </manifest>
         </jar>
