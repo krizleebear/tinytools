@@ -21,7 +21,7 @@ public class PosterHandlerAmazonSmall implements IPosterHandler
 	{
 		return contentUrl + keyword + "&x=0&y=0";
 	}
-
+	
 	public void characters(char[] ch, int start, int length)
 			throws SAXException
 	{

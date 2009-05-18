@@ -46,15 +46,18 @@ public class PosterGrabber
 	public void searchForPoster(String keyword) throws IOException,
 			SAXException
 	{
+		keyword = escapeKeyword(keyword);
+		
 		final String expectedFileName = keyword+".png";
 		File poster = findPosterOnDisk(expectedFileName);
+		
 		if(poster!=null)
 		{
 			System.out.println("Poster for '"+keyword+"' already found in "+poster.getAbsolutePath());
 			return;
 		}
 		
-		keyword = escapeKeyword(keyword);
+//		keyword = escapeKeyword(keyword);
 
 		IPosterHandler smallPicHandler = new PosterHandlerAmazonSmall(keyword);
 		System.out.println(smallPicHandler.getContentUrl());
@@ -96,10 +99,8 @@ public class PosterGrabber
 				{
 					System.err.println("Poster could not be written to " + targetFile.getAbsolutePath());
 				}
-				
 			}
 		}
-		
 	}
 	
 	private File findPosterOnDisk(final String expectedFileName)
@@ -126,11 +127,31 @@ public class PosterGrabber
 	
 	private String escapeKeyword(String keyword)
 	{
-		keyword = keyword.replace(",", "%2C");
-		keyword = keyword.replace(" ", "+");
-		return keyword;
+		StringBuilder sb = new StringBuilder();
+		char[] chars = keyword.toCharArray();
+		
+		for(char c : chars)
+		{
+			if	(
+					(c >= '!' && c <= ',') 
+				||	(c >= ':' && c <= '@')
+				||	(c >= '[' && c <= '^')
+				||	(c == '`')
+				||	(c > 'z')
+				)
+			{
+				sb.append('%');
+				sb.append( Integer.toHexString((int)c).toUpperCase() );
+			}
+			else
+			{
+				sb.append(c);
+			}
+		}
+		
+		return sb.toString(); 
 	}
-
+	
 	private void writeContentToFile(IPosterHandler smallPicHandler)
 			throws MalformedURLException, IOException
 	{
@@ -166,7 +187,7 @@ public class PosterGrabber
 		PosterGrabber pg = new PosterGrabber(posterDirectory);
 		try
 		{
-			pg.searchForPoster("scheinheiligen");
+			pg.searchForPoster("Kirschblüten");
 		}
 		catch (IOException e)
 		{
