@@ -95,4 +95,53 @@ public class FileInfo implements Comparable<FileInfo>
 	{
 		return file.getAbsolutePath().substring(absoluteRootPath.length());
 	}
+	
+	private String escapeKeyword(String keyword)
+	{
+		StringBuilder sb = new StringBuilder();
+		char[] chars = keyword.toCharArray();
+		
+		for(char c : chars)
+		{
+			if	(
+					(c >= '!' && c <= ',') 
+				||	(c >= ':' && c <= '@')
+				||	(c >= '[' && c <= '^')
+				||	(c == '`')
+				||	(c > 'z')
+				)
+			{
+				sb.append('%');
+				sb.append( Integer.toHexString((int)c).toUpperCase() );
+			}
+			else if(c==' ')
+			{
+				sb.append('+');
+			}
+			else
+			{
+				sb.append(c);
+			}
+		}
+		
+		return sb.toString(); 
+	}
+	
+	/**
+	 * Returns URL escaped name for poster searching
+	 * @return
+	 */
+	public String getEscapedName()
+	{
+		return escapeKeyword(displayedName);
+	}
+	
+	/**
+	 * Returns the expected file name for a small poster to this movie
+	 * @return
+	 */
+	public String getSmallPicFile()
+	{
+		return getEscapedName()+"_small.png";
+	}
 }

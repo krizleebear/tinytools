@@ -129,7 +129,7 @@ public class VExplorer
 
 			try
 			{
-				grabber.searchForPoster(currentVideo.getDisplayedName());
+				grabber.searchForPoster(currentVideo);
 			}
 			catch (IOException e)
 			{
