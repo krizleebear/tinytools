@@ -43,27 +43,22 @@ public class PosterGrabber
 		this.targetDirectory = targetDirectory;
 	}
 
-	public void searchForPoster(String keyword) throws IOException,
-			SAXException
+	public void searchForPoster(FileInfo moviefile) throws IOException, SAXException
 	{
-		keyword = escapeKeyword(keyword);
+		String keyword = moviefile.getEscapedName();
 		
-		final String expectedFileName = keyword+".png";
-		File poster = findPosterOnDisk(expectedFileName);
+		final String expectedFileName = moviefile.getSmallPicFile();
+		File smallPoster = findPosterOnDisk(expectedFileName);
 		
-		if(poster!=null)
+		if(smallPoster!=null)
 		{
-			System.out.println("Poster for '"+keyword+"' already found in "+poster.getAbsolutePath());
+			System.out.println("Poster for '"+keyword+"' already found in "+smallPoster.getAbsolutePath());
 			return;
 		}
 		
-//		keyword = escapeKeyword(keyword);
-
 		IPosterHandler smallPicHandler = new PosterHandlerAmazonSmall(keyword);
 		System.out.println(smallPicHandler.getContentUrl());
-
-//		writeContentToFile(smallPicHandler);
-
+		
 		htmlParser.setProperty(Parser.schemaProperty, schema);
 		htmlParser.setContentHandler(smallPicHandler);
 
@@ -102,7 +97,7 @@ public class PosterGrabber
 			}
 		}
 	}
-	
+		
 	private File findPosterOnDisk(final String expectedFileName)
 	{
 		File[] files = targetDirectory.listFiles(new FilenameFilter() {
@@ -125,32 +120,7 @@ public class PosterGrabber
 		return ImageIO.read(new URL(url));
 	}
 	
-	private String escapeKeyword(String keyword)
-	{
-		StringBuilder sb = new StringBuilder();
-		char[] chars = keyword.toCharArray();
-		
-		for(char c : chars)
-		{
-			if	(
-					(c >= '!' && c <= ',') 
-				||	(c >= ':' && c <= '@')
-				||	(c >= '[' && c <= '^')
-				||	(c == '`')
-				||	(c > 'z')
-				)
-			{
-				sb.append('%');
-				sb.append( Integer.toHexString((int)c).toUpperCase() );
-			}
-			else
-			{
-				sb.append(c);
-			}
-		}
-		
-		return sb.toString(); 
-	}
+
 	
 	private void writeContentToFile(IPosterHandler smallPicHandler)
 			throws MalformedURLException, IOException
@@ -187,7 +157,7 @@ public class PosterGrabber
 		PosterGrabber pg = new PosterGrabber(posterDirectory);
 		try
 		{
-			pg.searchForPoster("Kirschblüten");
+			pg.searchForPoster(new FileInfo(new File("Kirschblüten.avi")));
 		}
 		catch (IOException e)
 		{

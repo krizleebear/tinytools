@@ -9,9 +9,8 @@ import org.xml.sax.SAXException;
 public class PosterHandlerAmazonSmall implements IPosterHandler
 {
 	private static final String contentUrl = "http://www.amazon.de/s/ref=nb_ss_w?__mk_de_DE=%C5M%C5Z%D5%D1&url=search-alias%3Ddvd&field-keywords=";
-//	private static final String contentUrl = "http://localhost:8080/s/ref=nb_ss_w?__mk_de_DE=%C5M%C5Z%D5%D1&url=search-alias%3Ddvd&field-keywords=";
 	private String keyword;
-
+	
 	public PosterHandlerAmazonSmall(String keyword)
 	{
 		this.keyword = keyword;
@@ -25,59 +24,41 @@ public class PosterHandlerAmazonSmall implements IPosterHandler
 	public void characters(char[] ch, int start, int length)
 			throws SAXException
 	{
-		// TODO Auto-generated method stub
-
 	}
 
 	public void endDocument() throws SAXException
 	{
-		// TODO Auto-generated method stub
-
 	}
 
 	public void endElement(String uri, String localName, String name)
 			throws SAXException
 	{
-		// TODO Auto-generated method stub
-
 	}
 
 	public void endPrefixMapping(String prefix) throws SAXException
 	{
-		// TODO Auto-generated method stub
-
 	}
 
 	public void ignorableWhitespace(char[] ch, int start, int length)
 			throws SAXException
 	{
-		// TODO Auto-generated method stub
-
 	}
 
 	public void processingInstruction(String target, String data)
 			throws SAXException
 	{
-		// TODO Auto-generated method stub
-
 	}
 
 	public void setDocumentLocator(Locator locator)
 	{
-		// TODO Auto-generated method stub
-
 	}
 
 	public void skippedEntity(String name) throws SAXException
 	{
-		// TODO Auto-generated method stub
-
 	}
 
 	public void startDocument() throws SAXException
 	{
-		// TODO Auto-generated method stub
-
 	}
 	
 	boolean atCorrectTable = false;
@@ -123,8 +104,6 @@ public class PosterHandlerAmazonSmall implements IPosterHandler
 	public void startPrefixMapping(String prefix, String uri)
 			throws SAXException
 	{
-		// TODO Auto-generated method stub
-
 	}
 
 	public String getBiggerImageUrl()
