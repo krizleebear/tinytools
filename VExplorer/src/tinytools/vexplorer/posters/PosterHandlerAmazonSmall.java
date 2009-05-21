@@ -1,24 +1,20 @@
-package tinytools.vexplorer;
+package tinytools.vexplorer.posters;
 
 import java.awt.Image;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
-public class PosterHandlerAmazonSmall implements IPosterHandler
+public class PosterHandlerAmazonSmall extends PosterHandlerBase
 {
-	private static final String contentUrl = "http://www.amazon.de/s/ref=nb_ss_w?__mk_de_DE=%C5M%C5Z%D5%D1&url=search-alias%3Ddvd&field-keywords=";
-	private String keyword;
+	private static final String contentBaseUrl = "http://www.amazon.de/s/ref=nb_ss_w?__mk_de_DE=%C5M%C5Z%D5%D1&url=search-alias%3Ddvd&field-keywords=";
 	
-	public PosterHandlerAmazonSmall(String keyword)
+	public PosterHandlerAmazonSmall()
 	{
-		this.keyword = keyword;
-	}
-	
-	public String getContentUrl()
-	{
-		return contentUrl + keyword + "&x=0&y=0";
 	}
 	
 	public void characters(char[] ch, int start, int length)
@@ -106,14 +102,17 @@ public class PosterHandlerAmazonSmall implements IPosterHandler
 	{
 	}
 
-	public String getBiggerImageUrl()
+	public PosterResult findPoster(String movieName) throws IOException, SAXException
 	{
-		return biggerImageHref;
+		PosterResult result = new PosterResult();
+		String escapedMovieName = escapeKeyword(movieName);
+		
+		URL htmlURL = new URL (contentBaseUrl + escapedMovieName + "&x=0&y=0");
+		System.out.println("Searching for poster: " + htmlURL.toString());
+		parseHtml(htmlURL);
+		
+		result.setPosterURL(smallImageUrl);
+		result.setNextRessourceURL(biggerImageHref);
+		return result;
 	}
-
-	public String getPosterUrl()
-	{
-		return smallImageUrl;
-	}
-
 }
