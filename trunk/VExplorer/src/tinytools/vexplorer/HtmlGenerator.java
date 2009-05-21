@@ -40,7 +40,7 @@ public class HtmlGenerator
 			FileInfo currentVideo = videos[i];
 
 			sb.append("<tr>\n");
-			sb.append("<td align='center'><a class='pic' target='_blank' href='http://www.imdb.com/find?s=tt&q="+URLEncoder.encode(currentVideo.getDisplayedName())+"&x=0&y=0'><img border='0' src='images/"+currentVideo.getSmallPicFile()+"'/></a></td>");
+			sb.append("<td align='center'><a class='pic' target='_blank' href='http://www.imdb.com/find?s=tt&q="+URLEncoder.encode(currentVideo.getDisplayedName())+"&x=0&y=0'><img border='0' src='images/"+URLEncoder.encode(currentVideo.getSmallPicFile())+"'/></a></td>");
 			
 			System.out.print(currentVideo.getDisplayedName());
 			sb.append("<td>");
