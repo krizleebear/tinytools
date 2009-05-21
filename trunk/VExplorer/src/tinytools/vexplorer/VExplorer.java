@@ -14,6 +14,8 @@ import java.util.Map.Entry;
 
 import org.xml.sax.SAXException;
 
+import tinytools.vexplorer.posters.PosterGrabber;
+
 public class VExplorer
 {
 	private static final String DIRECTORY_IMAGES = "./images/";
@@ -120,7 +122,8 @@ public class VExplorer
 
 	private void downloadPosters()
 	{
-		PosterGrabber grabber = new PosterGrabber(new File(DIRECTORY_IMAGES));
+		PosterGrabber grabber = new PosterGrabber();
+		//PosterGrabber grabber = new PosterGrabber(new File(DIRECTORY_IMAGES));
 		FileInfo[] videos = fileIndex.values().toArray(new FileInfo[0]);
 
 		for (int i = 0; i < videos.length; i++)
@@ -129,7 +132,8 @@ public class VExplorer
 
 			try
 			{
-				grabber.searchForPoster(currentVideo);
+				File smallPicFile = new File("./images/", currentVideo.getSmallPicFile());
+				grabber.downloadSmallPoster(currentVideo.getDisplayedName(), smallPicFile);
 			}
 			catch (IOException e)
 			{
