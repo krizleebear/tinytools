@@ -18,14 +18,15 @@ import org.xml.sax.SAXException;
 public class PosterGrabber
 {
 	private IPosterFinder smallPosterFinder = new PosterHandlerAmazonSmall();
+	private IPosterFinder middlePosterFinder = new PosterHandlerAmazonMid();
 	
-	public void downloadSmallPoster(String movieName, File targetFile) throws IOException, SAXException
+	public PosterResult downloadSmallPoster(String movieName, File targetFile) throws IOException, SAXException
 	{
 		// does poster already exist on disk?
 		if(targetFile.exists())
 		{
 			System.out.println("Poster for '"+movieName+"' already found in "+targetFile.getAbsolutePath());
-			return;
+			return null;
 		}
 		
 		// search for poster on the web
@@ -40,6 +41,31 @@ public class PosterGrabber
 			URL smallPosterURL = new URL(posterInfo.getPosterURL());
 			downloadImage(smallPosterURL, targetFile);
 		}
+		return posterInfo;
+	}
+	
+	public PosterResult downloadMiddlePoster(String url, File targetFile) throws IOException, SAXException
+	{
+		// does poster already exist on disk?
+		if(targetFile.exists())
+		{
+			System.out.println("Middle-sized poster already found in "+targetFile.getAbsolutePath());
+			return null;
+		}
+		
+		PosterResult posterInfo = middlePosterFinder.findPoster(url);
+		
+		if(posterInfo.getPosterURL()==null)
+		{
+			System.err.println("No poster found in " + url);
+		}
+		else
+		{
+			System.out.println("Downloading poster from " + posterInfo.getPosterURL());
+			URL posterURL = new URL(posterInfo.getPosterURL());
+			downloadImage(posterURL, targetFile);
+		}
+		return posterInfo;
 	}
 	
 	private void downloadImage(URL url, File targetFile) throws IOException

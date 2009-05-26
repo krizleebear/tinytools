@@ -144,4 +144,14 @@ public class FileInfo implements Comparable<FileInfo>
 	{
 		return getEscapedName()+"_small.png";
 	}
+
+	public String getMediumPicFile()
+	{
+		return getEscapedName()+"_medium.png";
+	}
+
+	public String getLargePicFile()
+	{
+		return getEscapedName()+"_large.png";
+	}
 }
