@@ -7,11 +7,9 @@ import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
-public class PosterHandlerAmazonSmall extends PosterHandlerBase
+public class PosterHandlerAmazonMid extends PosterHandlerBase
 {
-	private static final String contentBaseUrl = "http://www.amazon.de/s/ref=nb_ss_w?__mk_de_DE=%C5M%C5Z%D5%D1&url=search-alias%3Ddvd&field-keywords=";
-	
-	public PosterHandlerAmazonSmall()
+	public PosterHandlerAmazonMid()
 	{
 	}
 	
@@ -56,7 +54,7 @@ public class PosterHandlerAmazonSmall extends PosterHandlerBase
 	}
 	
 	boolean atCorrectTable = false;
-	String smallImageUrl = null;
+	String midImageUrl = null;
 	String biggerImageHref = null;
 	boolean finished = false;
 
@@ -69,8 +67,8 @@ public class PosterHandlerAmazonSmall extends PosterHandlerBase
 		if(localName == "td")
 		{
 //			System.out.println(atts.getValue("class"));
-			String cssClass = atts.getValue("class");
-			if(cssClass != null && cssClass.equalsIgnoreCase("imageColumn"))
+			String id = atts.getValue("id");
+			if(id != null && id.equalsIgnoreCase("prodImageCell"))
 			{
 				atCorrectTable = true;
 //				System.out.println(localName);
@@ -85,7 +83,7 @@ public class PosterHandlerAmazonSmall extends PosterHandlerBase
 			}
 			if(localName == "img")
 			{
-				this.smallImageUrl = atts.getValue("src");
+				this.midImageUrl = atts.getValue("src");
 //				System.out.println(smallImageUrl);
 				
 				atCorrectTable = false;
@@ -100,16 +98,15 @@ public class PosterHandlerAmazonSmall extends PosterHandlerBase
 	{
 	}
 
-	public PosterResult findPoster(String movieName) throws IOException, SAXException
+	public PosterResult findPoster(String url) throws IOException, SAXException
 	{
 		PosterResult result = new PosterResult();
-		String escapedMovieName = escapeKeyword(movieName);
 		
-		URL htmlURL = new URL (contentBaseUrl + escapedMovieName + "&x=0&y=0");
+		URL htmlURL = new URL (url);
 		System.out.println("Searching for poster: " + htmlURL.toString());
 		parseHtml(htmlURL);
 		
-		result.setPosterURL(smallImageUrl);
+		result.setPosterURL(midImageUrl);
 		result.setNextRessourceURL(biggerImageHref);
 		return result;
 	}

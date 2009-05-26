@@ -39,12 +39,14 @@
 			<fileset dir="${libdir}" />
 			<fileset dir=".">
 				<include name="*.properties"/>
+				<include name="*.app"/>
 			</fileset>
 		</copy>
 		<checksum>
 			<fileset dir="${releasedir}">
 				<include name="*.jar"/>
 				<include name="*.properties"/>
+				<include name="*.app"/>
 			</fileset>
 		</checksum>
 	</target>

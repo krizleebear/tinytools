@@ -59,10 +59,12 @@ public class HtmlGenerator
 			}
 			System.out.println();
 			
-			//sb.append("<br/>\n");
 			sb.append("</td>\n");
 			sb.append("</tr>\n");
 		}
+		
+//		sb.append("<tr><td>&nbsp;</td><td><div style='height:300px'>&nbsp;</div></td></tr>\n"); //empty line
+//		sb.append("<tr><td>&nbsp;</td><td><a href='#' style='font-size:10px'>Update content...</a></td></tr>\n");
 		
 		sb.append("</table>\n");
 		
