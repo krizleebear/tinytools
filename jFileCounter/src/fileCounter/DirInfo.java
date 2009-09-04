@@ -5,12 +5,11 @@ import java.text.NumberFormat;
 
 public class DirInfo
 {
-
-	File path;
-	int fileCount;
-	int depth;
-	DirInfo parent;
-	long byteCount;
+	private File path;
+	private int fileCount;
+	private int depth;
+	private DirInfo parent;
+	private long byteCount;
 
 	public long getByteCount()
 	{
@@ -67,11 +66,6 @@ public class DirInfo
 		return fileCount;
 	}
 
-	public void setFileCount(int fileCount)
-	{
-		this.fileCount = fileCount;
-	}
-
 	public int getDepth()
 	{
 		return depth;
@@ -98,11 +92,9 @@ public class DirInfo
 
 		sb.append(nf.format(getByteCount()));
 
-		// sb.append(getByteCount());
 		sb.append(" bytes");
 		sb.append(")");
 		return sb.toString();
-
 	}
 
 }

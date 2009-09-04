@@ -18,16 +18,18 @@ public class FileCounter
 	{
 		climb(this.path, null, 0);
 
-		int warnLevelCount = Integer.parseInt(System.getProperty(
-				"WarnLevelCount", "100"));
+		int warnLevelCount = Integer.parseInt(System.getProperty("WarnLevelCount", "0"));
+		int warnLevelSize = Integer.parseInt(System.getProperty("WarnLevelSize", "0"));
 
 		for (DirInfo info : infoStore)
 		{
-			if (warnLevelCount <= info.fileCount)
+			if (warnLevelCount <= info.getFileCount() || warnLevelSize <= info.getByteCount())
 			{
 				logLine(info.toString());
 			}
 		}
+
+		logLine("Analyzed " + dirCounter + " directories and " + fileCounter + " files within " + path.getAbsolutePath() + ".");
 	}
 
 	void logLine(String s)
@@ -40,7 +42,8 @@ public class FileCounter
 		System.out.print(s);
 	}
 
-	private int counter = 0;
+	private int fileCounter = 0;
+	private int dirCounter = 0;
 	private long lastOutput = System.currentTimeMillis();
 
 	private void climb(File currentDir, DirInfo parentInfo, int depth)
@@ -54,14 +57,15 @@ public class FileCounter
 		File[] files = currentDir.listFiles();
 		for (File f : files)
 		{
-			counter++;
-
 			if (f.isDirectory())
 			{
+				dirCounter++;
 				climb(f, info, depth + 1);
 			}
 			else
 			{
+				fileCounter++;
+
 				info.incBytecount(f.length());
 				info.incFileCount(1);
 			}
