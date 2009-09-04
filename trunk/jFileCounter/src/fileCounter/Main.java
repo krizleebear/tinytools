@@ -16,8 +16,6 @@ public class Main
 		if (args.length < 1)
 		{
 			root = new File("./");
-
-			root = new File("/Volumes/OstkŸste/install");
 		}
 		else
 		{
