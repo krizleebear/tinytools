@@ -10,6 +10,8 @@ public class DirInfo
 	private int depth;
 	private DirInfo parent;
 	private long byteCount;
+	private int longestFileNameLength;
+	private long biggestFileSize;
 
 	public long getByteCount()
 	{
@@ -36,7 +38,7 @@ public class DirInfo
 		return path;
 	}
 
-	public void incFileCount(int count)
+	private void incFileCount(int count)
 	{
 		fileCount += count;
 		DirInfo parentInfo = getParent();
@@ -45,10 +47,38 @@ public class DirInfo
 			parentInfo.incFileCount(count);
 		}
 	}
+	
+	private void updateBiggestFileSize(long size)
+	{
+		if(size > this.biggestFileSize)
+		{
+			this.biggestFileSize = size;
+			
+			DirInfo parentInfo = getParent();
+			if (parentInfo != null)
+			{
+				parentInfo.updateBiggestFileSize(size);
+			}
+		}
+	}
 
-	public void incBytecount(long count)
+	public long getBiggestFileSize()
+	{
+		return biggestFileSize;
+	}
+
+	public void addFile(File f)
+	{
+		incBytecount(f.length());
+		incFileCount(1);
+	}
+	
+	private void incBytecount(long count)
 	{
 		this.byteCount += count;
+		
+		updateBiggestFileSize(count);
+		
 		DirInfo parentInfo = getParent();
 		if (parentInfo != null)
 		{
@@ -83,18 +113,40 @@ public class DirInfo
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < getDepth(); i++)
 		{
-			sb.append("|----");
+			sb.append("|---");
 		}
 		sb.append(path.getName());
 		sb.append(" (");
+		
 		sb.append(getFileCount());
 		sb.append(" files --- ");
 
 		sb.append(nf.format(getByteCount()));
-
 		sb.append(" bytes");
+		
+		sb.append(" --- biggest file: ");
+		sb.append(nf.format(getBiggestFileSize()));
+		
+		sb.append(" --- longest filename: ");
+		sb.append(getLongestFileNameLength());
+		
 		sb.append(")");
 		return sb.toString();
+	}
+
+	public void updateLongestFileNameLength(int currentFileNameLength)
+	{
+		if(currentFileNameLength > getLongestFileNameLength())
+		{
+			this.longestFileNameLength = currentFileNameLength;
+			if(this.getParent()!=null)
+				getParent().updateLongestFileNameLength(currentFileNameLength);
+		}
+	}
+
+	public int getLongestFileNameLength()
+	{
+		return longestFileNameLength;
 	}
 
 }

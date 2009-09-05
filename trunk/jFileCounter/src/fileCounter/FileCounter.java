@@ -18,12 +18,13 @@ public class FileCounter
 	{
 		climb(this.path, null, 0);
 
+		/* Files will only be printed if they fulfill certain criteria */
 		int warnLevelCount = Integer.parseInt(System.getProperty("WarnLevelCount", "0"));
 		int warnLevelSize = Integer.parseInt(System.getProperty("WarnLevelSize", "0"));
 
 		for (DirInfo info : infoStore)
 		{
-			if (warnLevelCount <= info.getFileCount() || warnLevelSize <= info.getByteCount())
+			if (warnLevelCount <= info.getFileCount() && warnLevelSize <= info.getByteCount())
 			{
 				logLine(info.toString());
 			}
@@ -48,26 +49,26 @@ public class FileCounter
 
 	private void climb(File currentDir, DirInfo parentInfo, int depth)
 	{
-		DirInfo info = new DirInfo(currentDir);
-		info.setDepth(depth);
-		info.setParent(parentInfo);
+		DirInfo dirInfo = new DirInfo(currentDir);
+		dirInfo.setDepth(depth);
+		dirInfo.setParent(parentInfo);
 
-		infoStore.add(info);
+		infoStore.add(dirInfo);
 
 		File[] files = currentDir.listFiles();
-		for (File f : files)
+		for (File currentFile : files)
 		{
-			if (f.isDirectory())
+			dirInfo.updateLongestFileNameLength(currentFile.getName().length());
+			
+			if (currentFile.isDirectory())
 			{
 				dirCounter++;
-				climb(f, info, depth + 1);
+				climb(currentFile, dirInfo, depth + 1);
 			}
 			else
 			{
 				fileCounter++;
-
-				info.incBytecount(f.length());
-				info.incFileCount(1);
+				dirInfo.addFile(currentFile);
 			}
 
 			if (System.currentTimeMillis() - lastOutput > 1000)
