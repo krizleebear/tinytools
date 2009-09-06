@@ -70,6 +70,9 @@ int main()
 	sqlite->testQuery("select * from mytable", 10000);
 	sqlite->testQuery("select id,name from mytable", 10000);
 	sqlite->testQuery("select id,name from mytable order by name", 10000);
+
+	//sqlite->testPreparedStatement("select id,name from mytable order by name;", 10000); //doesn't work yet. too late for today
+
 	sqlite->closeDB();
 	delete sqlite;
 

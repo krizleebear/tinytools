@@ -9,6 +9,7 @@
 #define SQLITETEST_H_
 
 #include "sqlite3.h"
+#include <time.h>
 
 class SQLiteTest
 {
@@ -23,7 +24,9 @@ public:
 
   int openDB();
   int testQuery(char* query, int numberOfCycles);
+  int testPreparedStatement(char* query, int numberOfCycles);
   void closeDB();
+  void analyzeTimestamps(clock_t startTime, clock_t endTime, char* query, int numberOfCycles);
 
   virtual
   ~SQLiteTest();
