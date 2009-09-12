@@ -8,7 +8,7 @@
 #ifndef SQLITETEST_H_
 #define SQLITETEST_H_
 
-#include "sqlite3.h"
+#include "sqlite/sqlite3.h"
 #include <time.h>
 
 class SQLiteTest

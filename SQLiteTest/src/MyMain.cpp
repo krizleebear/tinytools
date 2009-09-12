@@ -7,7 +7,6 @@
 
 #include <iostream>
 #include <stdio.h>
-#include <sqlite3.h>
 #include <sys/param.h> //MAXPATHLEN
 #include "SQLiteTest.h"
 
