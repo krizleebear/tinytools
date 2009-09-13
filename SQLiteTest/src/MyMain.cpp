@@ -10,20 +10,15 @@
 #include <sys/param.h> //MAXPATHLEN
 #include "SQLiteTest.h"
 #include <time.h>
+#include <string>
+
+#include "TestDataGenerator.h"
+#include "DataTypes.h"
 
 void
-log(char* string)
+log(const char* string)
 {
   std::cout << string << std::endl;
-}
-
-void
-printWorkingDir()
-{
-  char currentPath[MAXPATHLEN];
-  getcwd(currentPath, MAXPATHLEN);
-
-  log(currentPath);
 }
 
 static int
@@ -62,41 +57,63 @@ dbTest(char* dbFilename, char* sqlQuery)
   return 0;
 }
 
-void testPreparedStatement(SQLiteTest* sqlite)
+void
+testPreparedStatement(SQLiteTest* sqlite)
 {
-  int numberOfCycles = 10;
-  char* insertSQL =
-            "insert into Person (displayedName, firstName, lastName) values (?, ?, ?);";
-    sqlite3_stmt* insertStatement;
-    sqlite->prepareStatement(insertSQL, &insertStatement);
+  int numberOfCycles = 10000;
+  clock_t startTime, endTime;
 
-    clock_t startTime, endTime;
-    startTime = clock();
+  const char* insertPersonSQL =
+      "insert into Person (displayedName, firstName, lastName) values (?, ?, ?);";
 
-    for (int i = 0; i < numberOfCycles; i++)
-      {
-        sqlite3_bind_text(insertStatement, 1, "vorname nachname", -1, SQLITE_STATIC);
-        sqlite3_bind_text(insertStatement, 2, "vorname", -1, SQLITE_STATIC);
-        sqlite3_bind_text(insertStatement, 3, "nachname", -1, SQLITE_STATIC);
+  startTime = clock();
 
-        sqlite3_step(insertStatement);
+  log("preparing statement");
 
-        sqlite3_reset(insertStatement);
-      }
+  sqlite3_stmt* insertPersonStatement;
+  sqlite->prepareStatement(insertPersonSQL, &insertPersonStatement);
+  endTime = clock();
 
-    endTime = clock();
-    sqlite->analyzeTimestamps(startTime, endTime, insertSQL, numberOfCycles);
+  sqlite->analyzeTimestamps(startTime, endTime, "preparing insertPerson", 1);
+
+  startTime = clock();
+
+  for (int i = 0; i < numberOfCycles; i++)
+    {
+      sqlite3_bind_text(insertPersonStatement, 1, "vorname nachname", -1,
+          SQLITE_STATIC);
+      sqlite3_bind_text(insertPersonStatement, 2, "vorname", -1, SQLITE_STATIC);
+      sqlite3_bind_text(insertPersonStatement, 3, "nachname", -1, SQLITE_STATIC);
+
+      sqlite3_step(insertPersonStatement);
+      sqlite3_reset(insertPersonStatement);
+    }
+  endTime = clock();
+
+  sqlite->analyzeTimestamps(startTime, endTime, insertPersonSQL, numberOfCycles);
+
+  sqlite3_finalize(insertPersonStatement);
 }
 
 int
 main()
 {
-  log("!!!Hello World!!!"); // prints !!!Hello World!!!
+  TestDataGenerator* gen = new TestDataGenerator();
 
-  printWorkingDir();
+  gen->createRandomPerson();
+
+  //return 0;
+
+  char currentPath[MAXPATHLEN];
+  getcwd(currentPath, MAXPATHLEN);
+  std::cout << "Current working dir: " << currentPath << std::endl;
 
   SQLiteTest* sqlite = new SQLiteTest("test.db");
   sqlite->openDB();
+
+  sqlite->testQuery(
+      "insert into Person (displayedName, firstName, lastName) values ('vorname nachname', 'vorname', 'nachname');",
+      1000);
 
   testPreparedStatement(sqlite);
 
@@ -109,6 +126,4 @@ main()
 
   return 0;
 }
-
-
 
