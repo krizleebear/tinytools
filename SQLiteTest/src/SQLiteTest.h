@@ -24,7 +24,8 @@ public:
 
   int openDB();
   int testQuery(char* query, int numberOfCycles);
-  int testPreparedStatement(char* query, int numberOfCycles);
+  int execute(char* query);
+  int prepareStatement(char* query, sqlite3_stmt **ppStatement);
   void closeDB();
   void analyzeTimestamps(clock_t startTime, clock_t endTime, char* query, int numberOfCycles);
 
