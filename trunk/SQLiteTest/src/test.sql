@@ -4,9 +4,9 @@ DROP TABLE IF EXISTS Person;
 CREATE TABLE Person
 (
 	id integer, 
-	displayedName text, 
+	displayedName text,  
 	firstName text, 
-	lastName text, 
+	lastName text COLLATE NOCASE, --compare case insensitive 
 	
 	primary key(id asc)
 );
@@ -15,8 +15,10 @@ DROP TABLE IF EXISTS Phone;
 CREATE TABLE Phone 
 (
 	id integer, 
-	person_id integer constraint fk_phone_person references Person(id), 
-	displayedNumber varchar, 
+	person_id integer constraint fk_phone_person references Person(id),
+	phoneType_flag integer not null, -- mobile, isdn, private, work, ...
+	displayedNumber text, 
+	normalizedNumber integer, -- für Rufnummernauflösung
 	
 	primary key(id asc)
 );

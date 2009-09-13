@@ -70,28 +70,36 @@ SQLiteTest::analyzeTimestamps(clock_t startTime, clock_t endTime, char* query,
   std::cout << std::endl;
   std::cout << "That makes " << milliseconds / (float) numberOfCycles
       << " milliseconds per cycle" << std::endl;
-  std::cout << "-----------------------------------------------------------" << std::endl;
+  std::cout << "-----------------------------------------------------------"
+      << std::endl;
+}
+
+int
+SQLiteTest::execute(char* query)
+{
+  int rc = 0;
+  char *zErrMsg = 0;
+  rc = sqlite3_exec(db, query, emptyCallback, 0, &zErrMsg);
+  if (rc != SQLITE_OK)
+    {
+      fprintf(stderr, "SQL error: %s\n", zErrMsg);
+      sqlite3_free( zErrMsg);
+      return rc;
+    }
+  return rc;
 }
 
 int
 SQLiteTest::testQuery(char* query, int numberOfCycles)
 {
   int rc = 0;
-  char *zErrMsg = 0;
 
   clock_t startTime, endTime;
   startTime = clock();
 
   for (int i = 0; i < numberOfCycles; i++)
     {
-      //rc = sqlite3_exec(db, query, callback, 0, &zErrMsg);
-      rc = sqlite3_exec(db, query, emptyCallback, 0, &zErrMsg);
-      if (rc != SQLITE_OK)
-        {
-          fprintf(stderr, "SQL error: %s\n", zErrMsg);
-          sqlite3_free(zErrMsg);
-          return rc;
-        }
+      execute(query);
     }
 
   endTime = clock();
@@ -101,37 +109,54 @@ SQLiteTest::testQuery(char* query, int numberOfCycles)
 }
 
 int
-SQLiteTest::testPreparedStatement(char* query, int numberOfCycles)
+SQLiteTest::prepareStatement(char* query, sqlite3_stmt **ppStatement)
 {
   int rc = 0;
   char *zErrMsg = 0;
-  sqlite3_stmt* statement = 0;
 
-  rc = sqlite3_prepare_v2(db, query, strlen(query), &statement, 0);
+  rc = sqlite3_prepare(db, query, strlen(query), ppStatement, NULL);
+
   if (rc != SQLITE_OK)
     {
       fprintf(stderr, "SQL error: %s\n", zErrMsg);
-      sqlite3_free(zErrMsg);
+      sqlite3_free( zErrMsg);
       return rc;
     }
-
-  clock_t startTime, endTime;
-  startTime = clock();
-
-  for (int i = 0; i < numberOfCycles; i++)
-    {
-      rc = sqlite3_step(statement);
-      if (rc != SQLITE_OK)
-        {
-          fprintf(stderr, "SQL error: %s\n", zErrMsg);
-          sqlite3_free(zErrMsg);
-          return rc;
-        }
-      sqlite3_reset(statement);
-    }
-
-  endTime = clock();
-  analyzeTimestamps(startTime, endTime, query, numberOfCycles);
-
   return rc;
 }
+
+//int
+//SQLiteTest::testPreparedStatement(char* query, int numberOfCycles)
+//{
+//  int rc = 0;
+//  char *zErrMsg = 0;
+//  sqlite3_stmt* statement = 0;
+//
+//  rc = sqlite3_prepare_v2(db, query, strlen(query), &statement, 0);
+//  if (rc != SQLITE_OK)
+//    {
+//      fprintf(stderr, "SQL error: %s\n", zErrMsg);
+//      sqlite3_free(zErrMsg);
+//      return rc;
+//    }
+//
+//  clock_t startTime, endTime;
+//  startTime = clock();
+//
+//  for (int i = 0; i < numberOfCycles; i++)
+//    {
+//      rc = sqlite3_step(statement);
+//      if (rc != SQLITE_OK)
+//        {
+//          fprintf(stderr, "SQL error: %s\n", zErrMsg);
+//          sqlite3_free(zErrMsg);
+//          return rc;
+//        }
+//      sqlite3_reset(statement);
+//    }
+//
+//  endTime = clock();
+//  analyzeTimestamps(startTime, endTime, query, numberOfCycles);
+//
+//  return rc;
+//}
