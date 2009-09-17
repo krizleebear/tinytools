@@ -28,6 +28,7 @@ public:
   int prepareStatement(const char* query, sqlite3_stmt **ppStatement);
   void closeDB();
   void analyzeTimestamps(clock_t startTime, clock_t endTime, const char* query, int numberOfCycles);
+  long getLastInsertedID();
 
   void log(const char* message);
 

@@ -95,31 +95,51 @@ testPreparedStatement(SQLiteTest* sqlite)
   sqlite3_finalize(insertPersonStatement);
 }
 
+void insertPerson(char* nachname, char* vorname, char* phoneNumber, SQLiteTest* db)
+{
+  static char* insertPhone = "insert into Phone (person_id, phoneType_flag, displayedNumber) values (%d, %d, '%s');";
+  static char* insertPerson = "insert into Person (displayedName, firstName, lastName) values ('%s %s', '%s', '%s');";
+
+  char buffer[1000];
+  sprintf(buffer, insertPerson, vorname, nachname, vorname, nachname);
+
+  db->execute(buffer);
+  long newID = db->getLastInsertedID();
+
+  sprintf(buffer, insertPhone, newID, 0, phoneNumber);
+  db->execute(buffer);
+
+}
+
 int
 main()
 {
   TestDataGenerator* gen = new TestDataGenerator();
-
-  gen->createRandomPerson();
-
-  //return 0;
+  //DataTypes::Person testPerson = gen->createRandomPerson();
 
   char currentPath[MAXPATHLEN];
   getcwd(currentPath, MAXPATHLEN);
   std::cout << "Current working dir: " << currentPath << std::endl;
 
-  SQLiteTest* sqlite = new SQLiteTest("test.db");
+  SQLiteTest* sqlite = new SQLiteTest("../test.db");
   sqlite->openDB();
 
-  sqlite->testQuery(
-      "insert into Person (displayedName, firstName, lastName) values ('vorname nachname', 'vorname', 'nachname');",
-      1000);
+  insertPerson("nachname", "vorname", "08951853132", sqlite);
 
-  testPreparedStatement(sqlite);
+//  sqlite->execute("begin;");
+//  sqlite->testQuery(
+//      "insert into Person (displayedName, firstName, lastName) values ('vorname nachname', 'vorname', 'nachname');",
+//      1000);
+//  sqlite->execute("commit;");
 
-  sqlite->testQuery(
-      "select Person.displayedName, Phone.displayedNumber from Person,Phone where Person.id = Phone.person_id;",
-      1000);
+  //testPreparedStatement(sqlite);
+
+  long lastid = sqlite->getLastInsertedID();
+  cout << "last id: " << lastid << endl;
+
+//  sqlite->testQuery(
+//      "select Person.displayedName, Phone.displayedNumber from Person,Phone where Person.id = Phone.person_id;",
+//      1000);
 
   sqlite->closeDB();
   delete sqlite;
