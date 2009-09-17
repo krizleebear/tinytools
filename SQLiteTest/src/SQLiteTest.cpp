@@ -48,7 +48,7 @@ emptyCallback(void *NotUsed, int argc, char **argv, char **azColName)
 int
 SQLiteTest::openDB()
 {
-  log("opening db...");
+  std::cout << "opening db " << this->dbfile << std::endl;
 
   int rc = 0;
   rc = sqlite3_open(this->dbfile, &db);
@@ -140,4 +140,10 @@ SQLiteTest::prepareStatement(const char* query, sqlite3_stmt **ppStatement)
       return rc;
     }
   return rc;
+}
+
+long
+SQLiteTest::getLastInsertedID()
+{
+  return sqlite3_last_insert_rowid(db);
 }
