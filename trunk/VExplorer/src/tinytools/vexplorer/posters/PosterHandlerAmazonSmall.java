@@ -130,6 +130,9 @@ public class PosterHandlerAmazonSmall extends PosterHandlerBase
 	public PosterResult findPoster(String movieName) throws IOException,
 			SAXException
 	{
+		smallImageUrl = null;
+		biggerImageHref = null;
+		
 		PosterResult result = new PosterResult();
 		String escapedMovieName = escapeKeyword(movieName);
 
