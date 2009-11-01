@@ -32,7 +32,6 @@ public class VExplorer
 	public static void main(String[] args) throws FileNotFoundException,
 			IOException
 	{
-
 		VExplorer ve;
 
 		if (args.length == 0)

@@ -164,6 +164,21 @@ public class HtmlGenerator
 		sb.append(".piccell { align:center }\n");
 		sb.append("-->\n");
 		sb.append("</style>\n");
+		/*
+		 * script :: jump to character after key-up 
+		 */
+		sb.append("<script language='JavaScript' type='text/javascript'>\n");
+		sb.append("function keyUp(evt) {\n");
+		sb.append("    evt = (evt) ? evt : ((event) ? event : null);\n");
+		sb.append("    if (evt) {\n");
+		sb.append("        var charCode = (evt.charCode) ? evt.charCode : evt.keyCode;\n");
+		sb.append("        var char = String.fromCharCode(charCode).toUpperCase();\n");
+		sb.append("        window.location.hash='char_'+String.fromCharCode(charCode);\n");
+		sb.append("    }\n");
+		sb.append("}\n");
+		sb.append("document.onkeyup = keyUp;\n");
+		sb.append("</script>\n");
+		/* end script */
 		sb.append("</head>\n");
 		sb.append("<body>\n");
 	}
