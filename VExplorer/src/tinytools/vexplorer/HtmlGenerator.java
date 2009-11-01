@@ -108,14 +108,18 @@ public class HtmlGenerator
 		char currentChar = currentVideo.getFile().getName().charAt(0);
 		if(currentChar > lastCharacter)
 		{
-			//sb.append("<tr style='background-color:#444444'><td id='char_"+currentChar+"' align='left' colspan='2'>");
-			sb.append("<tr style=''><td style='' id='char_"+currentChar+"' align='left' colspan='2'>");
+			/* append empty line */
+			sb.append("<tr style='height:20px'><td>&nbsp;</td><td>&nbsp;</td></tr>");
 			
+			sb.append("<tr style=''><td style='width:100%' id='char_"+currentChar+"' align='left' colspan='2'>");
+
+			/* left indent if A not active */
 			if(currentChar != 'A')
 			{
 				sb.append("<span style='vertical-align:middle;background-color:"+bgcolor+";text-decoration:none;font-family: Arial, Helvetica, sans-serif;color:black;font-size:36px'>&nbsp;</span>");
 			}
 			
+			/* draw the links A-Z */
 			for(char c='A'; c<='Z'; c++)
 			{
 				if(c==currentChar)
@@ -123,17 +127,24 @@ public class HtmlGenerator
 					sb.append("&nbsp;<span style='vertical-align:middle;font-family: Arial, Helvetica, sans-serif;color:black;font-size:78px'>");
 					sb.append(c);
 					sb.append("</span>&nbsp;");
+					
 				}
 				else
 				{
+					/* indent before 'B' if 'A' active */
+					if(c=='B' && currentChar=='A')
+						sb.append("<span style='vertical-align:middle;background-color:"+bgcolor+";text-decoration:none;font-family: Arial, Helvetica, sans-serif;color:black;font-size:36px'>&nbsp;</span>");
+
 					sb.append("<a href='#char_"+c+"' style='vertical-align:middle;background-color:"+bgcolor+";text-decoration:none;font-family: Arial, Helvetica, sans-serif;color:black;font-size:36px'>");
 					sb.append(c);
 					sb.append("&nbsp;</a>");
 				}
 			}
-			
-			//sb.append("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 			sb.append("</td></tr>\n");
+			
+			/* append empty line */
+			sb.append("<tr style='height:20px'><td>&nbsp;</td><td>&nbsp;</td></tr>");
+			
 			lastCharacter = currentChar;
 		}
 	}
@@ -148,6 +159,7 @@ public class HtmlGenerator
 		sb.append("<style type=\"text/css\">\n");
 		sb.append("<!--\n");
 		sb.append("a { font-family: Arial, Helvetica, sans-serif; font-size: 72px; color:#000000; }\n");
+		sb.append("body {background-color:#ffffff;color:#000000} \n");
 		sb.append(".pic { font-color:white; font-size:3px; }\n");
 		sb.append(".piccell { align:center }\n");
 		sb.append("-->\n");
