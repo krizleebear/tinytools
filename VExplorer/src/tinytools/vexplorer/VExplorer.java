@@ -93,14 +93,14 @@ public class VExplorer
 		// scan directories
 		scanForFiles();
 
-		// create HTML index
-		generateHTML();
-
 		// check if target directores exist - create them if not
 		checkDirectories();
-
+		
 		// browse the web for posters
-		//downloadPosters();
+		downloadPosters();
+		
+		// create HTML index
+		generateHTML();
 	}
 
 	private void checkDirectories()
@@ -134,10 +134,13 @@ public class VExplorer
 			{
 				File smallPicFile = new File("./images/", currentVideo.getSmallPicFile());
 				PosterResult smallPoster = grabber.downloadSmallPoster(currentVideo.getDisplayedName(), smallPicFile);
-				if(smallPoster!=null && smallPoster.getNextRessourceURL()!=null)
+				currentVideo.setSmallPoster(smallPoster);
+				
+				if(smallPoster!=null)
 				{
 					File mediumPicFile = new File("./images/", currentVideo.getMediumPicFile());
 					PosterResult mediumPoster = grabber.downloadMiddlePoster(smallPoster.getNextRessourceURL(), mediumPicFile);
+					currentVideo.setMediumPoster(mediumPoster);
 					
 					if(mediumPoster!=null && mediumPoster.getNextRessourceURL()!=null)
 					{

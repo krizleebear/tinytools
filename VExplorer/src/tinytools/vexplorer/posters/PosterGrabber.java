@@ -26,7 +26,7 @@ public class PosterGrabber
 		if(targetFile.exists())
 		{
 			System.out.println("Poster for '"+movieName+"' already found in "+targetFile.getAbsolutePath());
-			return null;
+			return new PosterResult(); //default result, without URL
 		}
 		
 		// search for poster on the web
@@ -50,8 +50,11 @@ public class PosterGrabber
 		if(targetFile.exists())
 		{
 			System.out.println("Middle-sized poster already found in "+targetFile.getAbsolutePath());
-			return null;
+			return new PosterResult(); //default result, without URL
 		}
+		
+		if(url==null)
+			return null;
 		
 		PosterResult posterInfo = middlePosterFinder.findPoster(url);
 		

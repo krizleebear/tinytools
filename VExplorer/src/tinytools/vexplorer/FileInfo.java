@@ -2,12 +2,15 @@ package tinytools.vexplorer;
 
 import java.io.File;
 
+import tinytools.vexplorer.posters.PosterResult;
+
 public class FileInfo implements Comparable<FileInfo>
 {
 	private File file = null;
 	private long lastModified = 0;
 	private long filesize = 0;
 	private String displayedName;
+	private PosterResult smallPoster, mediumPoster;
 	
 	public FileInfo(File f)
 	{
@@ -154,4 +157,25 @@ public class FileInfo implements Comparable<FileInfo>
 	{
 		return getEscapedName()+"_large.png";
 	}
+	
+	public PosterResult getSmallPoster()
+	{
+		return smallPoster;
+	}
+
+	public void setSmallPoster(PosterResult smallPoster)
+	{
+		this.smallPoster = smallPoster;
+	}
+
+	public PosterResult getMediumPoster()
+	{
+		return mediumPoster;
+	}
+
+	public void setMediumPoster(PosterResult mediumPoster)
+	{
+		this.mediumPoster = mediumPoster;
+	}
+	
 }

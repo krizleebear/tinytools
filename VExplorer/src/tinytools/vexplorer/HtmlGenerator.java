@@ -35,17 +35,21 @@ public class HtmlGenerator
 		
 		sb.append("<table width='100%'><tr><td width='120'>&nbsp;</td><td>&nbsp;</td></tr>\n");
 		
-		
-		
 		for (int i = 0; i < videos.length; i++) 
 		{
 			FileInfo currentVideo = videos[i];
 
-			/*check first character*/
+			/* check first character */
 			insertCharacterIndex(currentVideo);
 			
 			sb.append("<tr>\n");
-			sb.append("<td align='center'><a class='pic' target='_blank' href='http://www.imdb.com/find?s=tt&q="+URLEncoder.encode(currentVideo.getDisplayedName())+"&x=0&y=0'><img border='0' src='images/"+URLEncoder.encode(currentVideo.getSmallPicFile())+"'/></a></td>");
+			
+			sb.append("<td align='center'>");
+			sb.append("<a class='pic' target='_blank' href='http://www.imdb.com/find?s=tt&q="+URLEncoder.encode(currentVideo.getDisplayedName())+"&x=0&y=0'>");
+			
+			insertPosterImage(currentVideo);
+			
+			sb.append("</a></td>");
 			
 			System.out.print(currentVideo.getDisplayedName());
 			sb.append("<td>");
@@ -68,9 +72,6 @@ public class HtmlGenerator
 			sb.append("</tr>\n");
 		}
 		
-//		sb.append("<tr><td>&nbsp;</td><td><div style='height:300px'>&nbsp;</div></td></tr>\n"); //empty line
-//		sb.append("<tr><td>&nbsp;</td><td><a href='#' style='font-size:10px'>Update content...</a></td></tr>\n");
-		
 		sb.append("</table>\n");
 		
 		writeFooter();
@@ -81,11 +82,28 @@ public class HtmlGenerator
 		sw.close();
 	}
 	
+	private void insertPosterImage(FileInfo currentVideo)
+	{
+		if(currentVideo.getMediumPoster()!=null)
+		{
+			sb.append("<img border='0' src='images/"+URLEncoder.encode(currentVideo.getMediumPicFile())+"'/>");
+		}
+		else
+		{
+			sb.append("<img border='0' src='images/"+URLEncoder.encode(currentVideo.getSmallPicFile())+"'/>");	
+		}
+	}
+
 	char lastCharacter = 'A'-1;
 	
 	private void insertCharacterIndex(FileInfo currentVideo)
 	{
 		String bgcolor = "#CCCCCC";
+		
+		/* test with permanently positioned div layer */
+//		sb.append("<div style='position:fixed;top:0;left:0;height:60px;width:100%;background-color:red'>");
+//		sb.append("<a style='font-size:60px' href='#'>A</a><a style='font-size:60px' href='#'>B</a>");
+//		sb.append("</div>");
 		
 		char currentChar = currentVideo.getFile().getName().charAt(0);
 		if(currentChar > lastCharacter)
