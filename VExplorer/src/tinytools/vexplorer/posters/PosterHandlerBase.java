@@ -9,8 +9,6 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
-import tinytools.vexplorer.posters.PosterResult;
-
 public abstract class PosterHandlerBase implements IPosterFinder, ContentHandler
 {
 	private XMLReader htmlParser = new Parser();

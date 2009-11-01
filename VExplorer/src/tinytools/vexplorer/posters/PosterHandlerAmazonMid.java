@@ -51,6 +51,7 @@ public class PosterHandlerAmazonMid extends PosterHandlerBase
 
 	public void startDocument() throws SAXException
 	{
+		finished = false;
 	}
 	
 	boolean atCorrectTable = false;
