@@ -85,7 +85,6 @@ public class PosterHandlerAmazonMid extends PosterHandlerBase
 			if(localName == "img")
 			{
 				this.midImageUrl = atts.getValue("src");
-//				System.out.println(smallImageUrl);
 				
 				atCorrectTable = false;
 				finished = true; //stick with the first poster found
@@ -101,6 +100,8 @@ public class PosterHandlerAmazonMid extends PosterHandlerBase
 
 	public PosterResult findPoster(String url) throws IOException, SAXException
 	{
+		midImageUrl = null;
+		biggerImageHref = null;
 		PosterResult result = new PosterResult();
 		
 		URL htmlURL = new URL (url);
