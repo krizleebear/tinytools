@@ -3,7 +3,6 @@ package tinytools.vexplorer.posters;
 public class PosterResult
 {
 	private String posterURL;
-	
 	private String nextRessourceURL;
 
 	public String getPosterURL()
