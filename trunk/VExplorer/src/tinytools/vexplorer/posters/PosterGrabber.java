@@ -122,7 +122,7 @@ public class PosterGrabber
 		try
 		{
 			PosterGrabber pg = new PosterGrabber();
-			pg.downloadSmallPoster("wer früher stirbt ist länger tot", new File("c:/temp/bliblablub.png"));
+			pg.downloadSmallPoster("wer frÃ¼her stirbt ist lÃ¤nger tot", new File("c:/temp/bliblablub.png"));
 		}
 		catch (IOException e)
 		{

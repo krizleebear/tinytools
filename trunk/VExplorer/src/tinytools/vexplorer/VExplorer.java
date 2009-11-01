@@ -124,7 +124,6 @@ public class VExplorer
 	private void downloadPosters()
 	{
 		PosterGrabber grabber = new PosterGrabber();
-		//PosterGrabber grabber = new PosterGrabber(new File(DIRECTORY_IMAGES));
 		FileInfo[] videos = fileIndex.values().toArray(new FileInfo[0]);
 
 		for (int i = 0; i < videos.length; i++)
