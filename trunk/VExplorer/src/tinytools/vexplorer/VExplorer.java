@@ -100,7 +100,7 @@ public class VExplorer
 		checkDirectories();
 
 		// browse the web for posters
-		downloadPosters();
+		//downloadPosters();
 	}
 
 	private void checkDirectories()

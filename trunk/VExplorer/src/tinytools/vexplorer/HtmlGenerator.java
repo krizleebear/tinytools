@@ -28,17 +28,22 @@ public class HtmlGenerator
 		videos = fileIndex.values().toArray(new FileInfo[0]);
 		Arrays.sort(videos);
 	}
-	
+		
 	public void generate(String destinationFile) throws IOException
 	{
 		writeHeader();
 		
 		sb.append("<table width='100%'><tr><td width='120'>&nbsp;</td><td>&nbsp;</td></tr>\n");
 		
+		
+		
 		for (int i = 0; i < videos.length; i++) 
 		{
 			FileInfo currentVideo = videos[i];
 
+			/*check first character*/
+			insertCharacterIndex(currentVideo);
+			
 			sb.append("<tr>\n");
 			sb.append("<td align='center'><a class='pic' target='_blank' href='http://www.imdb.com/find?s=tt&q="+URLEncoder.encode(currentVideo.getDisplayedName())+"&x=0&y=0'><img border='0' src='images/"+URLEncoder.encode(currentVideo.getSmallPicFile())+"'/></a></td>");
 			
@@ -76,6 +81,45 @@ public class HtmlGenerator
 		sw.close();
 	}
 	
+	char lastCharacter = 'A'-1;
+	
+	private void insertCharacterIndex(FileInfo currentVideo)
+	{
+		String bgcolor = "#CCCCCC";
+		
+		char currentChar = currentVideo.getFile().getName().charAt(0);
+		if(currentChar > lastCharacter)
+		{
+			//sb.append("<tr style='background-color:#444444'><td id='char_"+currentChar+"' align='left' colspan='2'>");
+			sb.append("<tr style=''><td style='' id='char_"+currentChar+"' align='left' colspan='2'>");
+			
+			if(currentChar != 'A')
+			{
+				sb.append("<span style='vertical-align:middle;background-color:"+bgcolor+";text-decoration:none;font-family: Arial, Helvetica, sans-serif;color:black;font-size:36px'>&nbsp;</span>");
+			}
+			
+			for(char c='A'; c<='Z'; c++)
+			{
+				if(c==currentChar)
+				{
+					sb.append("&nbsp;<span style='vertical-align:middle;font-family: Arial, Helvetica, sans-serif;color:black;font-size:78px'>");
+					sb.append(c);
+					sb.append("</span>&nbsp;");
+				}
+				else
+				{
+					sb.append("<a href='#char_"+c+"' style='vertical-align:middle;background-color:"+bgcolor+";text-decoration:none;font-family: Arial, Helvetica, sans-serif;color:black;font-size:36px'>");
+					sb.append(c);
+					sb.append("&nbsp;</a>");
+				}
+			}
+			
+			//sb.append("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+			sb.append("</td></tr>\n");
+			lastCharacter = currentChar;
+		}
+	}
+
 	private void writeHeader()
 	{
 		sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n");
