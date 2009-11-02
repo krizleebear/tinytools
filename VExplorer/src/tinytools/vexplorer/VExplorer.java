@@ -3,6 +3,7 @@ package tinytools.vexplorer;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -124,15 +125,34 @@ public class VExplorer
 	{
 		PosterGrabber grabber = new PosterGrabber();
 		FileInfo[] videos = fileIndex.values().toArray(new FileInfo[0]);
-
+		
+		/* init search hints */
+		Properties hints = new Properties();
+		File searchHintsFile = new File("SearchHints.properties");
+		try
+		{
+			hints.load(new FileReader(searchHintsFile));
+			System.out.println("Loaded search hints from: " + searchHintsFile.getAbsolutePath());
+			
+		}
+		catch (IOException e1)
+		{
+			System.err.println("Could not read search hints from: " + searchHintsFile.getAbsolutePath());
+		}
+		
 		for (int i = 0; i < videos.length; i++)
 		{
 			FileInfo currentVideo = videos[i];
-
+			String searchString = hints.getProperty(currentVideo.getDisplayedName().toLowerCase());
+			if(searchString==null)
+				searchString = currentVideo.getDisplayedName();
+			else
+				System.out.println("Using search hint: " + searchString);
+			
 			try
 			{
 				File smallPicFile = new File("./images/", currentVideo.getSmallPicFile());
-				PosterResult smallPoster = grabber.downloadSmallPoster(currentVideo.getDisplayedName(), smallPicFile);
+				PosterResult smallPoster = grabber.downloadSmallPoster(searchString, smallPicFile);
 				currentVideo.setSmallPoster(smallPoster);
 				
 				if(smallPoster!=null)
