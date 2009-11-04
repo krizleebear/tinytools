@@ -5,18 +5,15 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import org.xml.sax.SAXException;
 
 import tinytools.vexplorer.posters.PosterGrabber;
-import tinytools.vexplorer.posters.PosterResult;
 
 public class VExplorer
 {
@@ -24,6 +21,7 @@ public class VExplorer
 	private String[] pathes = null;
 	private HashMap<String, FileInfo> fileIndex = new HashMap<String, FileInfo>();
 	private Properties props = new Properties();
+	PosterGrabber posterGrabber = new PosterGrabber();
 
 	/**
 	 * @param args
@@ -97,10 +95,13 @@ public class VExplorer
 		checkDirectories();
 		
 		// browse the web for posters
-		downloadPosters();
+		beginDownloadPosters();
 		
 		// create HTML index
 		generateHTML();
+		
+		// wait until all poster are completely downloaded
+		posterGrabber.waitUntilDone();
 	}
 
 	private void checkDirectories()
@@ -121,9 +122,8 @@ public class VExplorer
 		}
 	}
 
-	private void downloadPosters()
+	private void beginDownloadPosters()
 	{
-		PosterGrabber grabber = new PosterGrabber();
 		FileInfo[] videos = fileIndex.values().toArray(new FileInfo[0]);
 		
 		/* init search hints */
@@ -140,6 +140,7 @@ public class VExplorer
 			System.err.println("Could not read search hints from: " + searchHintsFile.getAbsolutePath());
 		}
 		
+		/* enumerate all videos */
 		for (int i = 0; i < videos.length; i++)
 		{
 			FileInfo currentVideo = videos[i];
@@ -151,22 +152,7 @@ public class VExplorer
 			
 			try
 			{
-				File smallPicFile = new File("./images/", currentVideo.getSmallPicFile());
-				PosterResult smallPoster = grabber.downloadSmallPoster(searchString, smallPicFile);
-				currentVideo.setSmallPoster(smallPoster);
-				
-				if(smallPoster!=null)
-				{
-					File mediumPicFile = new File("./images/", currentVideo.getMediumPicFile());
-					PosterResult mediumPoster = grabber.downloadMiddlePoster(smallPoster.getNextRessourceURL(), mediumPicFile);
-					currentVideo.setMediumPoster(mediumPoster);
-					
-					if(mediumPoster!=null && mediumPoster.getNextRessourceURL()!=null)
-					{
-						File largePicFile = new File("./images/", currentVideo.getLargePicFile());
-						//PosterResult largePoster = grabber.do
-					}
-				}
+				posterGrabber.downloadPosters(currentVideo, searchString);
 			}
 			catch (IOException e)
 			{
@@ -207,5 +193,4 @@ public class VExplorer
 			}
 		}
 	}
-
 }
