@@ -111,15 +111,16 @@ public class PosterGrabber
 				}
 				catch (InterruptedException e)
 				{
-					System.out
-							.println("Waiting at downloadQueue was interrupted...");
-					
-					if(allJobsDone)
-						running = false;
+					System.out.println("Waiting at downloadQueue was interrupted...");
 				}
 				catch (Exception ex)
 				{
 					ex.printStackTrace();
+				}
+				finally
+				{
+					if(allJobsDone)
+						running = false;
 				}
 			}
 		}
