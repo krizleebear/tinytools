@@ -53,11 +53,15 @@ public class UpdateMain
 			int remoteVersionNumber = getRemoteVersionNumber(updatePropertyURL);
 			System.out.println("Remote version number: " + remoteVersionNumber);
 
+			/*
+			 * commented out, as checking of files is always necessary
+			 * 
 			if(localVersionNumber >= remoteVersionNumber)
 			{
 				System.out.println("Local version is up to date. Cancelling update.");
 				System.exit(0);
 			}
+			*/
 			
 			//start with updating Update.properties
 			System.out.println("------------------------------------------------------------------------------------");
