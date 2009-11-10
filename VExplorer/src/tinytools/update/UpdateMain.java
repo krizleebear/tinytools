@@ -53,7 +53,7 @@ public class UpdateMain
 			int remoteVersionNumber = getRemoteVersionNumber(updatePropertyURL);
 			System.out.println("Remote version number: " + remoteVersionNumber);
 
-			if(localVersionNumber > remoteVersionNumber)
+			if(localVersionNumber >= remoteVersionNumber)
 			{
 				System.out.println("Local version is up to date. Cancelling update.");
 				System.exit(0);
@@ -96,7 +96,7 @@ public class UpdateMain
 		onlineProps.load(onlinePropsStream);
 		onlinePropsStream.close();
 		
-		String versionString = onlineProps.getProperty("Version", "-1");
+		String versionString = onlineProps.getProperty("VERSION", "-1");
 		int version = -1;
 		try { version = Integer.parseInt(versionString); } catch(Exception ex) {}
 		
@@ -117,6 +117,18 @@ public class UpdateMain
 				String path = (String) props.get(key);
 				System.out.println("Adding file to update: " + path);
 				filesToUpdate.add( path );
+			}
+			else if(key.startsWith("Once"))
+			{
+				String path = (String) props.get(key);
+				if(new File(path).exists())
+				{
+					System.out.println("File already exists and will not be overwritten: " + path);
+				}
+				else
+				{
+					filesToUpdate.add(path);
+				}
 			}
 		}
 		return filesToUpdate;
