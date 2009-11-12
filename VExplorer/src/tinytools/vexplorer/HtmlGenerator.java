@@ -33,7 +33,7 @@ public class HtmlGenerator
 	{
 		writeHeader();
 		
-		sb.append("<table width='100%'><tr><td width='120'>&nbsp;</td><td>&nbsp;</td></tr>\n");
+		sb.append("<table width='100%'><tr><td width='120'>&nbsp;</td><td width='100%'>&nbsp;</td></tr>\n");
 		
 		for (int i = 0; i < videos.length; i++) 
 		{
@@ -95,6 +95,7 @@ public class HtmlGenerator
 	}
 
 	char lastCharacter = 'A'-1;
+	int currentCharacterIndex = 0;
 	
 	private void insertCharacterIndex(FileInfo currentVideo)
 	{
@@ -106,6 +107,8 @@ public class HtmlGenerator
 //		sb.append("</div>");
 		
 		char currentChar = currentVideo.getFile().getName().charAt(0);
+		currentChar = Character.toUpperCase(currentChar);
+		
 		if(currentChar > lastCharacter)
 		{
 			/* append empty line */
@@ -113,8 +116,8 @@ public class HtmlGenerator
 			
 			sb.append("<tr style=''><td style='width:100%' id='char_"+currentChar+"' align='left' colspan='2'>");
 
-			/* left indent if A not active */
-			if(currentChar != 'A')
+			/* left indent if the first character is not active */
+			if(currentChar != 'A'	) 
 			{
 				sb.append("<span style='vertical-align:middle;background-color:"+bgcolor+";text-decoration:none;font-family: Arial, Helvetica, sans-serif;color:black;font-size:36px'>&nbsp;</span>");
 			}
@@ -143,9 +146,10 @@ public class HtmlGenerator
 			sb.append("</td></tr>\n");
 			
 			/* append empty line */
-			sb.append("<tr style='height:20px'><td>&nbsp;</td><td>&nbsp;</td></tr>");
+			sb.append("<tr style='height:	'><td>&nbsp;</td><td>&nbsp;</td></tr>");
 			
 			lastCharacter = currentChar;
+			currentCharacterIndex++;
 		}
 	}
 
@@ -172,8 +176,8 @@ public class HtmlGenerator
 		sb.append("    evt = (evt) ? evt : ((event) ? event : null);\n");
 		sb.append("    if (evt) {\n");
 		sb.append("        var charCode = (evt.charCode) ? evt.charCode : evt.keyCode;\n");
-		sb.append("        var char = String.fromCharCode(charCode).toUpperCase();\n");
-		sb.append("        window.location.hash='char_'+String.fromCharCode(charCode);\n");
+		sb.append("        var upperChar = String.fromCharCode(charCode).toUpperCase();\n");
+		sb.append("        window.location.hash='char_'+upperChar;\n");
 		sb.append("    }\n");
 		sb.append("}\n");
 		sb.append("document.onkeyup = keyUp;\n");
