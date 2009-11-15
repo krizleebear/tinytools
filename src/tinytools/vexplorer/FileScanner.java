@@ -29,7 +29,7 @@ public class FileScanner {
 		recursiveSearch(rootDir);
 
 		System.out.println();
-		System.out.println("Found "+currentFileID+1+" files in "+absoluteRootPath);
+		System.out.println("Found "+currentFileID+" files in "+absoluteRootPath);
 	}
 	
 	/**
