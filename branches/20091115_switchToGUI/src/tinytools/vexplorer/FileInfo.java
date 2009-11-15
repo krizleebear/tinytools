@@ -37,7 +37,11 @@ public class FileInfo implements Comparable<FileInfo>
 		String name = file.getName();
 		
 		//remove file extension
-		name = name.substring(0, name.lastIndexOf('.'));
+		int lastDotIndex = name.lastIndexOf('.');
+		if(lastDotIndex>0) //don't try to remove if the hasn't got an extension
+		{
+			name = name.substring(0, name.lastIndexOf('.'));
+		}
 		
 		int additionalInformationIndex = name.indexOf(" - ");
 		if(additionalInformationIndex>0)
