@@ -21,7 +21,7 @@
             <manifest>
                 <attribute name="Main-Class" value="tinytools.vexplorer.VExplorer"/>
             	<!-- if several JARs have to be included, separate them by spaces, not colons! -->
-            	<attribute name="Class-Path" value="tagsoup-1.2.jar"/>
+            	<attribute name="Class-Path" value="tagsoup-1.2.jar TableLayout.jar"/>
             </manifest>
         </jar>
     </target>
