@@ -10,7 +10,7 @@ public class FileScanner {
 	
 	private File rootDir;
 	private String absoluteRootPath = "";
-	private int foundFileCount = 0;
+	private int currentFileID = 0;
 	private HashMap<String, FileInfo> fileIndex = new HashMap<String, FileInfo>();
 	
 	public FileScanner(String path, HashMap<String, FileInfo> fileIndex)
@@ -29,7 +29,7 @@ public class FileScanner {
 		recursiveSearch(rootDir);
 
 		System.out.println();
-		System.out.println("Found "+foundFileCount+" files in "+absoluteRootPath);
+		System.out.println("Found "+currentFileID+1+" files in "+absoluteRootPath);
 	}
 	
 	/**
@@ -56,8 +56,8 @@ public class FileScanner {
 			
 			if(!entry.isDirectory()) //don`t add directories to found files
 			{
-				foundFileCount++;
-				fileIndex.put(getRelativePath(entry), new FileInfo(entry));
+				fileIndex.put(getRelativePath(entry), new FileInfo(currentFileID, entry));
+				currentFileID++;
 			}
 			else
 			{
@@ -65,7 +65,7 @@ public class FileScanner {
 			}
 			
 			
-			if(foundFileCount%100==0)
+			if(currentFileID%100==0)
 				System.out.print("."); //user feedback (still-alive)
 		}
 	}

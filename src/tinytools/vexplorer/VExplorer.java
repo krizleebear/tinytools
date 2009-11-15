@@ -15,13 +15,14 @@ import org.xml.sax.SAXException;
 
 import tinytools.vexplorer.posters.PosterGrabber;
 
-public class VExplorer
+public class VExplorer implements IExplorerService
 {
 	private static final String DIRECTORY_IMAGES = "./images/";
 	private String[] pathes = null;
 	private HashMap<String, FileInfo> fileIndex = new HashMap<String, FileInfo>();
 	private Properties props = new Properties();
-	PosterGrabber posterGrabber = new PosterGrabber();
+	private PosterGrabber posterGrabber = new PosterGrabber();
+	private File configFile = new File("Config.properties");
 
 	/**
 	 * @param args
@@ -40,17 +41,16 @@ public class VExplorer
 			System.out.println("VExplorer [<path to video files>] [<path to video files>...]");
 			System.out.println("No pathes defined. Try reading configuration from Config.properties");
 
-			ve = new VExplorer(new File("Config.properties"));
-			ve.start();
+			ve = new VExplorer();
+			ve.explore();
 
 		}
 		if (args.length >= 1)
 		{
 			System.out.println("Usage: VExplorer <path to video files> [<path to video files>...]");
 			ve = new VExplorer(args);
-			ve.start();
+			ve.explore();
 		}
-
 	}
 
 	public VExplorer(String[] pathes)
@@ -58,9 +58,10 @@ public class VExplorer
 		this.pathes = pathes;
 	}
 
-	public VExplorer(File configFile) throws FileNotFoundException, IOException
+	public VExplorer() throws FileNotFoundException, IOException
 	{
 		readConfig(configFile);
+		EventDispatcher.getInstance().setService(this);
 	}
 
 	private void readConfig(File configFile) throws FileNotFoundException, IOException
@@ -86,10 +87,14 @@ public class VExplorer
 		this.pathes = videoPathes.toArray(new String[0]);
 	}
 
-	private void start()
+	private void explore()
 	{
 		// scan directories
 		scanForFiles();
+		
+		// callback to ExplorerListeners (inform them about the found files)
+		FileInfo[] foundFiles = fileIndex.values().toArray(new FileInfo[0]);
+		EventDispatcher.getInstance().updateFileList(foundFiles);
 
 		// check if target directores exist - create them if not
 		checkDirectories();
@@ -192,5 +197,15 @@ public class VExplorer
 				System.err.println("Error scanning path " + pathes[i]);
 			}
 		}
+	}
+
+	public void startExploring() throws Exception
+	{
+		explore();
+	}
+	
+	public void readSettings() throws Exception
+	{
+		readConfig(configFile);
 	}
 }

@@ -6,14 +6,16 @@ import tinytools.vexplorer.posters.PosterResult;
 
 public class FileInfo implements Comparable<FileInfo>
 {
+	private int fileID = -1;
 	private File file = null;
 	private long lastModified = 0;
 	private long filesize = 0;
 	private String displayedName;
 	private PosterResult smallPoster, mediumPoster;
 	
-	public FileInfo(File f)
+	public FileInfo(int id, File f)
 	{
+		this.fileID = id;
 		this.file = f;
 		this.lastModified = f.lastModified();
 		this.filesize = f.length();
