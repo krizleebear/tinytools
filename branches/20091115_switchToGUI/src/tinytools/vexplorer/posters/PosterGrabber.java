@@ -17,6 +17,7 @@ import javax.imageio.ImageIO;
 
 import org.xml.sax.SAXException;
 
+import tinytools.vexplorer.EventDispatcher;
 import tinytools.vexplorer.FileInfo;
 
 public class PosterGrabber
@@ -152,6 +153,9 @@ public class PosterGrabber
 				// //PosterResult largePoster = grabber.do
 				// }
 			}
+			
+			// inform listeners about the new image available
+			EventDispatcher.getInstance().updateFile(currentVideo);
 		}
 
 		public PosterResult downloadSmallPoster(String movieName,

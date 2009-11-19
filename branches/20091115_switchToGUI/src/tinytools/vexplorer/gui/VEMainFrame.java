@@ -128,7 +128,6 @@ public class VEMainFrame extends javax.swing.JFrame implements IExplorerListener
     }// </editor-fold>
 
     private void btSearchMoviesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSearchMoviesActionPerformed
-        System.out.println("do something to load my posters!");
         try
 		{
 			EventDispatcher.getInstance().startExploring();
