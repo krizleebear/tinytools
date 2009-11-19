@@ -56,13 +56,13 @@ public class VExplorer implements IExplorerService
 	public VExplorer(String[] pathes)
 	{
 		this.pathes = pathes;
-		EventDispatcher.getInstance().setService(this);
+		EventDispatcher.getInstance().addService(this);
 	}
 
 	public VExplorer() throws FileNotFoundException, IOException
 	{
 		readConfig(configFile);
-		EventDispatcher.getInstance().setService(this);
+		EventDispatcher.getInstance().addService(this);
 	}
 
 	private void readConfig(File configFile) throws FileNotFoundException, IOException
@@ -101,7 +101,7 @@ public class VExplorer implements IExplorerService
 		checkDirectories();
 		
 		// browse the web for posters
-//		beginDownloadPosters();
+		beginDownloadPosters();
 		
 		// create HTML index
 		generateHTML();
