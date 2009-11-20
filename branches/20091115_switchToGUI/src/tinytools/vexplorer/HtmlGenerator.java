@@ -130,7 +130,6 @@ public class HtmlGenerator
 					sb.append("&nbsp;<span style='vertical-align:middle;font-family: Arial, Helvetica, sans-serif;color:black;font-size:78px'>");
 					sb.append(c);
 					sb.append("</span>&nbsp;");
-					
 				}
 				else
 				{

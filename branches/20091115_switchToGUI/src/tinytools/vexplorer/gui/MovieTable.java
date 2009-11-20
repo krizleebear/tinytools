@@ -59,20 +59,7 @@ public class MovieTable extends JPanel implements IExplorerListener
 			int rowIndex = i;
 			layout.insertRow(rowIndex, rowHeight);
 
-			BufferedImage img = null;
-			try
-			{
-				img = ImageIO.read(new File("./images/21_medium.png"));
-				JLabel icon = new JLabel();
-				if(img!=null)
-					icon.setIcon(new ImageIcon(img));
-				this.add(icon, "0, " + rowIndex + ", c, c");
-			}
-			catch (IOException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+
 
 			JPanel moviePanel = new JPanel();
 			moviePanel.setBackground(Color.WHITE);
@@ -93,9 +80,9 @@ public class MovieTable extends JPanel implements IExplorerListener
 				consecutivePartIndex++;
 
 				moviePanel.add(Box.createRigidArea(new Dimension(5, 0))); // create
-																			// space
-																			// between
-																			// buttons
+				// space
+				// between
+				// buttons
 				JLabel consecutiveLabel = new JLabel("[" + consecutivePartIndex
 						+ "]");
 				consecutiveLabel.setFont(titleFont);
@@ -128,14 +115,43 @@ public class MovieTable extends JPanel implements IExplorerListener
 		return "";
 	}
 
-	public void updateFile(FileInfo file)
+	public void updateFile(FileInfo videofile)
 	{
-		System.out.println("new images for " + file.getDisplayedName());
+		System.out.println("new images for " + videofile.getDisplayedName());
 
-		Integer rowIndex = testMap.get(file);
-		System.out.println("rowindex for " + file.getDisplayedName() + " is "
+		Integer rowIndex = testMap.get(videofile);
+		System.out.println("rowindex for " + videofile.getDisplayedName() + " is "
 				+ rowIndex);
+		
+		if(rowIndex == null)
+			return;
 
+		BufferedImage img = null;
+		try
+		{
+			File iconFile = null;
+			if (videofile.getMediumPicFile() != null)
+			{
+				iconFile = new File("./images", videofile.getMediumPicFile());
+			}
+			if (!iconFile.exists() && videofile.getSmallPicFile()!=null)
+			{
+				iconFile = new File("./images", videofile.getSmallPicFile());
+			}
+
+			if(iconFile.exists())
+			{
+				img = ImageIO.read(iconFile);
+				JLabel icon = new JLabel();
+				if (img != null)
+					icon.setIcon(new ImageIcon(img));
+				this.add(icon, "0, " + rowIndex + ", c, c");
+			}
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	public void updateFileList(FileInfo[] filelist)
