@@ -166,6 +166,7 @@ public class PosterGrabber
 			{
 				System.out.println("Poster for '" + movieName
 						+ "' already found in " + targetFile.getAbsolutePath());
+				PosterResult res = new PosterResult();
 				return new PosterResult(); // default result, without URL
 			}
 
