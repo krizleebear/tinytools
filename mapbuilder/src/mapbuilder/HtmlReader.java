@@ -4,7 +4,9 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,6 +25,8 @@ public class HtmlReader extends DefaultHandler
 	private HTMLSchema schema = new HTMLSchema();
 
 	List<Tile> tiles = new LinkedList<Tile>();
+	private File file = null;
+	private int tileContainerMarker = -1;
 
 	public HtmlReader(File f)
 	{
@@ -31,16 +35,21 @@ public class HtmlReader extends DefaultHandler
 
 	public static void main(String args[]) throws Exception
 	{
-		File f = new File("./maps.html");
+		if(args.length < 1)
+		{
+			System.err.println("Provide the path to the HTML file to parse.");
+			System.exit(-1);
+		}
+		
+		File f = new File(args[0]);
 		HtmlReader reader = new HtmlReader(f);
 		reader.parse();
 	}
 
-	private File file = null;
-
 	public void parse() throws Exception
 	{
-		URL url = file.toURL();
+		URI uri = file.toURI();
+		URL url = uri.toURL();
 		parseHtml(url);
 
 		handleTiles();
@@ -52,8 +61,6 @@ public class HtmlReader extends DefaultHandler
 		htmlParser.setContentHandler(this);
 		htmlParser.parse(contentUrl.toString());
 	}
-
-	int tileContainerMarker = -1;
 
 	@Override
 	public void startElement(String uri, String localName, String qName,
@@ -179,12 +186,12 @@ public class HtmlReader extends DefaultHandler
 
 //		debug(combinedWidth + " x " + combinedHeight);
 
-		writeFile(new File("./output.png"), combinedWidth, combinedHeight);
+		writeFile(combinedWidth, combinedHeight);
 	}
 
-	private void writeFile(File file, int width, int height)
+	private void writeFile(int width, int height)
 	{
-		String htmlPath = file.getParent();
+		String htmlPath = this.file.getParent();
 
 		BufferedImage image = new BufferedImage(width, height,
 				BufferedImage.TYPE_INT_ARGB);
@@ -194,7 +201,8 @@ public class HtmlReader extends DefaultHandler
 		{
 			try
 			{
-				File tileFile = new File(htmlPath, tile.src);
+				String tileSrc = URLDecoder.decode(tile.src);
+				File tileFile = new File(htmlPath, tileSrc);
 				BufferedImage tileImage = ImageIO.read(tileFile);
 				g.drawImage(tileImage, tile.left, tile.top, null);
 			}
@@ -205,7 +213,7 @@ public class HtmlReader extends DefaultHandler
 		}
 		try
 		{
-			ImageIO.write(image, "png", file);
+			ImageIO.write(image, "png", new File(htmlPath, "mapbuilder.png") );
 		}
 		catch (IOException e)
 		{
