@@ -1,5 +1,7 @@
 package de.chle.jgantt;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Task
@@ -9,6 +11,21 @@ public class Task
 	int durationHours;
 	Date dueDate;
 	int percentDone;
+	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	
+	/**
+	 * Define date as string with pattern "yyyy-MM-dd"
+	 * @param name
+	 * @param description
+	 * @param durationHours
+	 * @param dueDateString
+	 * @param percentDone
+	 * @throws ParseException 
+	 */
+	public Task(String name, String description, int durationHours, String dueDateString, int percentDone) throws ParseException
+	{
+		this(name, description, durationHours, sdf.parse(dueDateString), percentDone);
+	}
 	
 	public Task(String name, String description, int durationHours, Date dueDate, int percentDone)
 	{
@@ -57,6 +74,11 @@ public class Task
 	public double getDoneFactor()
 	{
 		return (double)percentDone / 100;
+	}
+	
+	public String toString()
+	{
+		return "Task " + name + " - Begin: " + getBeginDate() + " - Due to: " + dueDate;
 	}
 	
 }
