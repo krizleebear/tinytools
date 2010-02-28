@@ -3,11 +3,13 @@ package de.chle.jgantt;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 //import java.util.Locale;
 
 public class Layout
 {
-//	private static Locale locale = Locale.GERMANY;
+	private Locale locale = Locale.GERMANY;
+	private static String months[] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "Oktober", "November", "December"};
 	private Date startDate, endDate;
 	private int width, height;
 	private StringBuffer sb = new StringBuffer(2048);
@@ -33,15 +35,15 @@ public class Layout
 	
 	private int getWeeksBetween(Date startDate, Date endDate)
 	{
-		Calendar start = Calendar.getInstance();
-		start.setMinimalDaysInFirstWeek(1);
+		Calendar start = Calendar.getInstance(locale);
+//		start.setMinimalDaysInFirstWeek(1);
 		start.clear();
 		start.setTime(startDate);
 		int startYear = start.get(Calendar.YEAR);
 		int startWeek = start.get(Calendar.WEEK_OF_YEAR);
 		
-		Calendar end = Calendar.getInstance();
-		end.setMinimalDaysInFirstWeek(1);
+		Calendar end = Calendar.getInstance(locale);
+//		end.setMinimalDaysInFirstWeek(1);
 		end.clear();
 		end.setTime(endDate);
 		int endYear = end.get(Calendar.YEAR);
@@ -79,12 +81,13 @@ public class Layout
 		int totalWeeks = getWeeksBetween(startDate, endDate);
 		int weekWidth = (int) ((double)width  / (double)totalWeeks);
 		
-		Calendar cal = Calendar.getInstance();
-		cal.setFirstDayOfWeek(Calendar.MONDAY);
-		cal.setMinimalDaysInFirstWeek(1);
+		Calendar cal = Calendar.getInstance(locale);
 		cal.clear();
+//		cal.setFirstDayOfWeek(Calendar.MONDAY);
+//		cal.setMinimalDaysInFirstWeek(7);
 		cal.setTime(startDate);
 		int lastMonth = cal.get(Calendar.MONTH);
+		boolean yearAlreadyPrinted = false;
 		
 		for(int i=0; i<totalWeeks; i++)
 		{
@@ -96,8 +99,11 @@ public class Layout
 			
 			int left = weekWidth * i;
 			
-			if(currentWeek==1)
+			if(currentWeek==1 || (!yearAlreadyPrinted ))
+			{
 				addYear(left, cal);
+				yearAlreadyPrinted = true;
+			}
 			
 			int currentMonth = cal.get(Calendar.MONTH);
 			if(currentMonth != lastMonth)
@@ -129,17 +135,15 @@ public class Layout
 		}
 	}
 	
-	private static String months[] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "Oktober", "November", "Dezember"};
-	
 	private void addMonth(int leftPx, Calendar cal)
 	{
 		String month = months[cal.get(Calendar.MONTH)];
 		appendLine("<div class='month' style='left:"+leftPx+"px'>"+month+"</div>");
 	}
-
+	private int yearZIndex = 6;
 	private void addYear(int leftPx, Calendar date)
 	{
-		appendLine("<div class='year' style='left:"+leftPx+"px'>"+date.get(Calendar.YEAR)+"</div>");
+		appendLine("<div class='year' style='left:"+leftPx+"px; z-index: '"+ yearZIndex++ +">"+date.get(Calendar.YEAR)+"</div>");
 	}
 	
 	private String htmlEscape(String s)
@@ -189,26 +193,27 @@ public class Layout
 		appendLine(".done { height: 15px; position: absolute; background-color:#FF99FF; z-index:10; }");
 		appendLine(".calendarweekEven { height: "+height+"px; background-color:#EEEEEE; position: absolute; z-index:5; text-align:center; border-top:1px solid black;}");
 		appendLine(".calendarweekOdd  { height: "+height+"px; background-color:#FFFFFF; position: absolute; z-index:5; text-align:center; border-top:1px solid black;}");
-		appendLine(".month { top: -15px; height: 15px; background-color:none; position: absolute; z-index:7; text-align:left; padding-left:2px; vertical-align:top; font-size: 10px;}");
-		appendLine(".year  { top: -30px; height: 17px; background-color:none; position: absolute; z-index:6; text-align:left; padding-left:2px; vertical-align:top; font-size: 12px; font-weight:bold}");
+		appendLine(".month { top: -15px; height: 15px; background-color:white; position: absolute; z-index:7; text-align:left; padding-left:2px; vertical-align:top; font-size: 10px;}");
+		appendLine(".year  { top: -30px; height: 17px; background-color:white; position: absolute; z-index:6; text-align:left; padding-left:2px; vertical-align:top; font-size: 12px; font-weight:bold}");
+		appendLine(".today  { top: 0px; height: "+height+"px; width: 1px; background-color:none; position: absolute; z-index:100; text-align:left; padding-left:2px; vertical-align:text-bottom; font-size: 12px; border-left:1px solid red; white-space:nowrap;}");
 		
 		appendLine("</style>");
 		appendLine("</head>");
 		appendLine("<body style='position: absolute; top:20px; left:20px; margin: 40px; font-family: Arial; font-size: 10px'>");
 		
-		//TODO html entities in description and name!
-		
 		insertCalendarWeeks(widthFactor);
 		
+		Date today = new Date();
+		int todayleft = (int) ((double)(today.getTime() - startDate.getTime()) * widthFactor);
+		appendLine("<div class='today' style='left: "+todayleft+"px'>&nbsp;</div>");
+		
 		/* tasks */
-		
-		
 		int taskCount = 0;
 		for(Task task : tasks)
 		{
 			StringBuffer description = new StringBuffer();
 			description.append(task.getPercentDone());
-			appendHtmlEscaped("%\n", description);
+			appendHtmlEscaped("% \n", description);
 			appendHtmlEscaped(task.getDescription(), description);
 
 			//			System.out.println(task);

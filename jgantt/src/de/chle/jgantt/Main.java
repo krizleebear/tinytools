@@ -14,7 +14,7 @@ public class Main
 	{
 		Calendar start = Calendar.getInstance(Locale.GERMANY);
 		start.clear();
-		start.set(2010, Calendar.FEBRUARY, 21); //attention: month starts with 0 !
+		start.set(2009, Calendar.DECEMBER, 29); //attention: month starts with 0 !
 		
 		Calendar end = Calendar.getInstance(Locale.GERMANY);
 		end.clear();
