@@ -1,12 +1,10 @@
 package de.chle.jgantt;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Task
 {
-	private static SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
 	private String name;
 	private String description;
 	private int durationHours;
@@ -14,7 +12,8 @@ public class Task
 	private int percentDone;
 	
 	/**
-	 * Define date as string with pattern "yyyy-MM-dd"
+	 * Define date as string 
+	 * Using dateformat defined in Configuration (default: yyyy-MM-dd)
 	 * @param name
 	 * @param description
 	 * @param durationHours
@@ -24,7 +23,7 @@ public class Task
 	 */
 	public Task(String name, String description, int durationHours, String dueDateString, int percentDone) throws ParseException
 	{
-		this(name, description, durationHours, dateformat.parse(dueDateString), percentDone);
+		this(name, description, durationHours, Configuration.getInstance().getDateformat().parse(dueDateString), percentDone);
 	}
 	
 	public Task(String name, String description, int durationHours, Date dueDate, int percentDone)

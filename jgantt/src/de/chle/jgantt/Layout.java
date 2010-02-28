@@ -8,7 +8,6 @@ import java.util.Locale;
 
 public class Layout
 {
-	private Locale locale = Locale.GERMANY;
 	private static String months[] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "Oktober", "November", "December"};
 	private Date startDate, endDate;
 	private int width, height;
@@ -35,14 +34,14 @@ public class Layout
 	
 	private int getWeeksBetween(Date startDate, Date endDate)
 	{
-		Calendar start = Calendar.getInstance(locale);
+		Calendar start = Calendar.getInstance(Configuration.getInstance().getLocale());
 //		start.setMinimalDaysInFirstWeek(1);
 		start.clear();
 		start.setTime(startDate);
 		int startYear = start.get(Calendar.YEAR);
 		int startWeek = start.get(Calendar.WEEK_OF_YEAR);
 		
-		Calendar end = Calendar.getInstance(locale);
+		Calendar end = Calendar.getInstance(Configuration.getInstance().getLocale());
 //		end.setMinimalDaysInFirstWeek(1);
 		end.clear();
 		end.setTime(endDate);
@@ -81,7 +80,7 @@ public class Layout
 		int totalWeeks = getWeeksBetween(startDate, endDate);
 		int weekWidth = (int) ((double)width  / (double)totalWeeks);
 		
-		Calendar cal = Calendar.getInstance(locale);
+		Calendar cal = Calendar.getInstance(Configuration.getInstance().getLocale());
 		cal.clear();
 //		cal.setFirstDayOfWeek(Calendar.MONDAY);
 //		cal.setMinimalDaysInFirstWeek(7);
@@ -213,7 +212,7 @@ public class Layout
 		{
 			StringBuffer description = new StringBuffer();
 			description.append(task.getPercentDone());
-			appendHtmlEscaped("% \n", description);
+			description.append("% &#13; ");
 			appendHtmlEscaped(task.getDescription(), description);
 
 			//			System.out.println(task);
