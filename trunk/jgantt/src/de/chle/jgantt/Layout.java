@@ -14,7 +14,6 @@ import net.iharder.base64.Base64;
 
 public class Layout
 {
-	private static String months[] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "Oktober", "November", "December"};
 	private Date startDate, endDate;
 	private int width, height;
 	private StringBuffer sb = new StringBuffer(2048);
@@ -143,6 +142,7 @@ public class Layout
 		monthCal.set(Calendar.DAY_OF_MONTH, 1); //use 1st of month to display
 		
 		int left = (int) ((double)(monthCal.getTime().getTime() - startDate.getTime()) * widthFactor);
+		String[] months = Configuration.getInstance().getMonths();
 		String month = months[monthCal.get(Calendar.MONTH)];
 		appendLine("<div class='month' style='left:"+left+"px'>"+month+"</div>");
 	}
@@ -224,6 +224,14 @@ public class Layout
 		
 		appendLine("</body>");
 		appendLine("</html>");
+	}
+	
+	/**
+	 * Clears the buffer
+	 */
+	public void reset()
+	{
+		sb = new StringBuffer();
 	}
 
 	private void appendStyleSheets()

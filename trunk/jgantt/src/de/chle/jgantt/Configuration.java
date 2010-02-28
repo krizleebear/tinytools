@@ -12,6 +12,7 @@ public class Configuration
 	private Locale locale = Locale.GERMANY;
 	private DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
 	private long workMillisPerDay = 8*60*60*1000; //8 working hours a day
+	private String months[] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "Oktober", "November", "December"};
 
 	private Configuration()
 	{
@@ -72,6 +73,21 @@ public class Configuration
 	public void setWorkingHoursPerDay(int hours)
 	{
 		workMillisPerDay = hours * 60*60*1000;
+	}
+
+	public String[] getMonths()
+	{
+		return months;
+	}
+
+	/**
+	 * Set the array defining the month's names, e.g.:
+	 * months[] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "Oktober", "November", "December"};  
+	 * @param months
+	 */
+	public void setMonths(String[] months)
+	{
+		this.months = months;
 	}
 	
 }
