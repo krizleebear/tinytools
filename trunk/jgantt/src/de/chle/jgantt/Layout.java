@@ -19,7 +19,6 @@ public class Layout
 	private int width, height;
 	private StringBuffer sb = new StringBuffer(2048);
 	private static long dayMillis = 24*60*60*1000;
-	private long workMillisPerDay = 8*60*60*1000; //8 working hours a day
 	
 	public Layout(Date startDate, Date endDate, int width, int height)
 	{
@@ -76,38 +75,42 @@ public class Layout
 		return numWeeks;
 	}
 	
-	private void appendCalendarWeeks(double widthFactor)
+	private void addWeeks(double widthFactor)
 	{
 		/* count number of total weeks to show */
 		int totalWeeks = getWeeksBetween(startDate, endDate);
-		int weekWidth = (int) ((double)width  / (double)totalWeeks);
+		int weekWidth = (int) ((double) width / (double) totalWeeks);
 		
 		Calendar cal = Calendar.getInstance(Configuration.getInstance().getLocale());
 		cal.clear();
 		cal.setTime(startDate);
+		
+		//check if startDate is first day of week
+		int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+		cal.add(Calendar.DAY_OF_MONTH, cal.getFirstDayOfWeek()-dayOfWeek); //go back to first day of week
+		
 		int lastMonth = cal.get(Calendar.MONTH);
 		boolean yearAlreadyPrinted = false;
 		
 		for(int i=0; i<totalWeeks; i++)
 		{
-			if(cal.getTimeInMillis()>endDate.getTime()) //small workaround to prevent more complex handling
+			if(cal.getTimeInMillis() > endDate.getTime()) //small workaround to prevent more complex handling
 				return;
 			
 			int currentYear = cal.get(Calendar.YEAR);
 			int currentWeek = cal.get(Calendar.WEEK_OF_YEAR);
-			
-			int left = weekWidth * i;
+			int left = (int) ((double)(cal.getTime().getTime() - startDate.getTime()) * widthFactor);
 			
 			if(currentWeek==1 || (!yearAlreadyPrinted ))
 			{
-				addYear(left, cal);
+				addYear(cal, widthFactor);
 				yearAlreadyPrinted = true;
 			}
 			
 			int currentMonth = cal.get(Calendar.MONTH);
 			if(currentMonth != lastMonth)
 			{
-				addMonth(left, cal);
+				addMonth(cal, widthFactor);
 				lastMonth = currentMonth;
 			}
 			
@@ -134,24 +137,29 @@ public class Layout
 		}
 	}
 	
-	private void addMonth(int leftPx, Calendar cal)
+	private void addMonth(Calendar cal, double widthFactor)
 	{
-		String month = months[cal.get(Calendar.MONTH)];
-		appendLine("<div class='month' style='left:"+leftPx+"px'>"+month+"</div>");
+		Calendar monthCal = (Calendar) cal.clone();
+		monthCal.set(Calendar.DAY_OF_MONTH, 1); //use 1st of month to display
+		
+		int left = (int) ((double)(monthCal.getTime().getTime() - startDate.getTime()) * widthFactor);
+		String month = months[monthCal.get(Calendar.MONTH)];
+		appendLine("<div class='month' style='left:"+left+"px'>"+month+"</div>");
 	}
 	
-	private int yearZIndex = 6;
-	private void addYear(int leftPx, Calendar date)
+	private int yearZIndex = 6; //newer year label should overlap the old year (if startDate is very near to beginning of next year)
+	private void addYear(Calendar cal, double widthFactor)
 	{
-		appendLine("<div class='year' style='left:"+leftPx+"px; z-index: "+ yearZIndex++ +"'>"+date.get(Calendar.YEAR)+"</div>");
+		Calendar yearCal = (Calendar) cal.clone();
+		int left = 0;
+		if(yearCal.get(Calendar.WEEK_OF_YEAR) == 1)
+		{
+			yearCal.set(Calendar.DAY_OF_YEAR, 1); //use January 1st to display year label 
+			left = (int) ((double)(yearCal.getTime().getTime() - startDate.getTime()) * widthFactor);
+		}
+		
+		appendLine("<div class='year' style='left:"+left+"px; z-index: "+ yearZIndex++ +"'>"+yearCal.get(Calendar.YEAR)+"</div>");
 	}
-	
-//	private String htmlEscape(String s)
-//	{
-//		StringBuffer sb = new StringBuffer();
-//		appendHtmlEscaped(s, sb);
-//		return sb.toString();
-//	}
 	
 	private void appendHtmlEscaped(String s, StringBuffer sb)
 	{
@@ -201,7 +209,7 @@ public class Layout
 		appendLine("<body style='position: absolute; top:20px; left:20px; margin: 40px; font-family: Arial; font-size: 10px'>");
 		
 		/* years, months and calendar week labels */
-		appendCalendarWeeks(widthFactor);
+		addWeeks(widthFactor);
 		
 		/* current date indicator line */
 		Date today = new Date();
@@ -209,15 +217,13 @@ public class Layout
 		appendLine("<div class='today' style='left: "+todayleft+"px'>&nbsp;</div>");
 		
 		/* tasks */
-		appendTasks(tasks, widthFactor);
+		addTasks(tasks, widthFactor);
 		
 		/* milestones */
-		appendMilestones(milestones, widthFactor);
+		addMilestones(milestones, widthFactor);
 		
 		appendLine("</body>");
 		appendLine("</html>");
-		
-		System.out.println(sb.toString());
 	}
 
 	private void appendStyleSheets()
@@ -231,7 +237,7 @@ public class Layout
 		appendLine(".year  { top: -30px; height: 17px; background-color:white; position: absolute; z-index:6; text-align:left; padding-left:2px; vertical-align:top; font-size: 12px; font-weight:bold}");
 		appendLine(".today  { top: 0px; height: "+height+"px; width: 1px; background-color:none; position: absolute; z-index:100; text-align:left; padding-left:2px; vertical-align:text-bottom; font-size: 12px; border-left:1px solid red; white-space:nowrap;}");
 
-		/* Milestone image */
+		/* embed Milestone image */
 		try
 		{
 			appendImageCssClass("milestone", new File("./karo.png"), "bottom left no-repeat", "position: absolute; z-index:20; width:20px; height:40px; text-align:left; text-indent:8px; vertical-align:bottom; top: -26px; z-index:105; white-space:nowrap;");
@@ -244,7 +250,7 @@ public class Layout
 		appendLine("</style>");
 	}
 
-	private void appendMilestones(List<Milestone> milestones, double widthFactor)
+	private void addMilestones(List<Milestone> milestones, double widthFactor)
 	{
 		if(milestones==null)
 			return;
@@ -253,10 +259,10 @@ public class Layout
 		{
 			int left = (int) ((double)(milestone.getDueDate().getTime() - startDate.getTime()) * widthFactor);
 			appendLine("<div class='milestone' style='left: "+left+"px;'>"+milestone.getName()+"</div>");
-		}//class='milestone' 
+		}
 	}
 
-	private void appendTasks(List<Task> tasks, double widthFactor)
+	private void addTasks(List<Task> tasks, double widthFactor)
 	{
 		if(tasks==null)
 			return;
@@ -269,9 +275,7 @@ public class Layout
 			description.append("% &#13; ");
 			appendHtmlEscaped(task.getDescription(), description);
 
-			//			System.out.println(task);
-			
-			int taskWidth = (int) (task.getDurationMillis() * (dayMillis/workMillisPerDay) * widthFactor) ;
+			int taskWidth = (int) (task.getDurationMillis() * (dayMillis/Configuration.getInstance().getWorkMillisPerDay()) * widthFactor) ;
 			int doneWidth = (int) ((double)taskWidth * (double)task.getPercentDone()/100d);
 			int left = (int) ((double)(task.getBeginMillis() - startDate.getTime()) * widthFactor);
 			
@@ -320,31 +324,9 @@ public class Layout
 		return Base64.encodeBytes(baos.toByteArray());
 	}
 
-	private void appendEmbeddedImage(BufferedImage img) throws IOException
-	{
-		String encodedImage = base64EncodeImage(img);
-		
-		sb.append("<img width='");
-		sb.append(img.getWidth());
-		sb.append("' height='");
-		sb.append(img.getHeight());
-		sb.append("' src='data:image/png;base64,");
-		sb.append(encodedImage);
-		sb.append("'/>");
-	}
-	
 	public String getHTML()
 	{
 		return sb.toString();
-	}
-	
-	/**
-	 * default: 8
-	 * @param hours
-	 */
-	public void setWorkingHoursPerDay(int hours)
-	{
-		workMillisPerDay = hours*60*60*1000;
 	}
 
 }
