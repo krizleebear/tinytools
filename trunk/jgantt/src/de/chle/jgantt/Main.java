@@ -14,11 +14,11 @@ public class Main
 	{
 		Calendar start = Calendar.getInstance(Locale.GERMANY);
 		start.clear();
-		start.set(2009, Calendar.DECEMBER, 29); //attention: month starts with 0 !
+		start.set(2010, Calendar.FEBRUARY, 1); //attention: month starts with 0 !
 		
 		Calendar end = Calendar.getInstance(Locale.GERMANY);
 		end.clear();
-		end.set(2011, Calendar.APRIL, 2);
+		end.set(2010, Calendar.APRIL, 2);
 		
 		Layout layouter = new Layout(start.getTime(), end.getTime(), 1000, 300);
 		List<Task> tasks = new ArrayList<Task>();
