@@ -3,13 +3,16 @@ package de.chle.jgantt;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
+//import java.util.Locale;
 
 public class Layout
 {
-	Date startDate, endDate;
-	int width, height;
-	StringBuffer sb = new StringBuffer(2048);
+//	private static Locale locale = Locale.GERMANY;
+	private Date startDate, endDate;
+	private int width, height;
+	private StringBuffer sb = new StringBuffer(2048);
+	private static long dayMillis = 24*60*60*1000;
+	private long workMillisPerDay = 8*60*60*1000; //8 working hours a day
 	
 	//default resolution: days
 
@@ -28,10 +31,10 @@ public class Layout
 		sb.append('\n');
 	}
 	
-	private int weeksBetween(Date startDate, Date endDate)
+	private int getWeeksBetween(Date startDate, Date endDate)
 	{
 		Calendar start = Calendar.getInstance();
-		start.setMinimalDaysInFirstWeek(7);
+		start.setMinimalDaysInFirstWeek(1);
 		start.clear();
 		start.setTime(startDate);
 		int startYear = start.get(Calendar.YEAR);
@@ -73,13 +76,39 @@ public class Layout
 	private void insertCalendarWeeks(double widthFactor)
 	{
 		/* count number of total weeks to show */
-		int totalWeeks = weeksBetween(startDate, endDate);
+		int totalWeeks = getWeeksBetween(startDate, endDate);
 		int weekWidth = (int) ((double)width  / (double)totalWeeks);
 		
+		Calendar cal = Calendar.getInstance();
+		cal.setFirstDayOfWeek(Calendar.MONDAY);
+		cal.setMinimalDaysInFirstWeek(1);
+		cal.clear();
+		cal.setTime(startDate);
+		int lastMonth = cal.get(Calendar.MONTH);
 		
 		for(int i=0; i<totalWeeks; i++)
 		{
-			sb.append("<div class='");
+			if(cal.getTimeInMillis()>endDate.getTime()) //small workaround to prevent more complex handling
+				return;
+			
+			int currentYear = cal.get(Calendar.YEAR);
+			int currentWeek = cal.get(Calendar.WEEK_OF_YEAR);
+			
+			int left = weekWidth * i;
+			
+			if(currentWeek==1)
+				addYear(left, cal);
+			
+			int currentMonth = cal.get(Calendar.MONTH);
+			if(currentMonth != lastMonth)
+			{
+				addMonth(left, cal);
+				lastMonth = currentMonth;
+			}
+			
+			sb.append("<div title='");
+			sb.append(currentYear + "/" + currentWeek);
+			sb.append("' class='");
 			if(i%2==0)
 			{
 				sb.append("calendarweekEven");
@@ -91,24 +120,77 @@ public class Layout
 			sb.append("' style='width:");
 			sb.append(weekWidth);
 			sb.append("px; left:");
-			sb.append(weekWidth*i);
-			appendLine("px'>&nbsp;</div>");
+			sb.append(left);
+			sb.append("px'>");
+			sb.append(currentWeek);
+			appendLine("</div>");
+			
+			cal.add(Calendar.WEEK_OF_YEAR, 1); //goto next week
+		}
+	}
+	
+	private static String months[] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "Oktober", "November", "Dezember"};
+	
+	private void addMonth(int leftPx, Calendar cal)
+	{
+		String month = months[cal.get(Calendar.MONTH)];
+		appendLine("<div class='month' style='left:"+leftPx+"px'>"+month+"</div>");
+	}
+
+	private void addYear(int leftPx, Calendar date)
+	{
+		appendLine("<div class='year' style='left:"+leftPx+"px'>"+date.get(Calendar.YEAR)+"</div>");
+	}
+	
+	private String htmlEscape(String s)
+	{
+		StringBuffer sb = new StringBuffer();
+		appendHtmlEscaped(s, sb);
+		return sb.toString();
+	}
+	
+	private void appendHtmlEscaped(String s, StringBuffer sb)
+	{
+		char[] chars = s.toCharArray();
+		
+		for(char c : chars)
+		{
+			if	(
+					(c >= '!' && c <= ',') 
+				||	(c >= ':' && c <= '@')
+				||	(c >= '[' && c <= '^')
+				||	(c == '`')
+				||	(c > 'z')
+				||  (c < '!')
+				)
+			{
+				sb.append("&#").append((int)c).append(';');
+			}
+//			else if(c==' ')
+//			{
+//				sb.append('+');
+//			}
+			else
+			{
+				sb.append(c);
+			}
 		}
 	}
 	
 	public void layout(List<Task> tasks)
 	{
 		long viewMillis = endDate.getTime() - startDate.getTime();
-		
-		double widthFactor = (double)width / (double)viewMillis;
+		double widthFactor = ((double)width / (double)viewMillis);
 		
 		appendLine("<html>");
 		appendLine("<head>");
 		appendLine("<style type='text/css'>");
 		appendLine(".task { height: 15px; position: absolute; background-color:lightgray; text-align:left; vertical-align:middle; ; white-space:nowrap; z-index:9;}");
 		appendLine(".done { height: 15px; position: absolute; background-color:#FF99FF; z-index:10; }");
-		appendLine(".calendarweekEven { height: "+height+"px; background-color:#EEEEEE; position: absolute; z-index:5;}");
-		appendLine(".calendarweekOdd  { height: "+height+"px; background-color:#FFFFFF; position: absolute; z-index:5;}");
+		appendLine(".calendarweekEven { height: "+height+"px; background-color:#EEEEEE; position: absolute; z-index:5; text-align:center; border-top:1px solid black;}");
+		appendLine(".calendarweekOdd  { height: "+height+"px; background-color:#FFFFFF; position: absolute; z-index:5; text-align:center; border-top:1px solid black;}");
+		appendLine(".month { top: -15px; height: 15px; background-color:none; position: absolute; z-index:7; text-align:left; padding-left:2px; vertical-align:top; font-size: 10px;}");
+		appendLine(".year  { top: -30px; height: 17px; background-color:none; position: absolute; z-index:6; text-align:left; padding-left:2px; vertical-align:top; font-size: 12px; font-weight:bold}");
 		
 		appendLine("</style>");
 		appendLine("</head>");
@@ -116,31 +198,35 @@ public class Layout
 		
 		//TODO html entities in description and name!
 		
-		/* time line */
-		
-		
-		/* background :: calender weeks */
 		insertCalendarWeeks(widthFactor);
 		
 		/* tasks */
 		
-		int taskCount = 2;
+		
+		int taskCount = 0;
 		for(Task task : tasks)
 		{
-//			System.out.println(task);
+			StringBuffer description = new StringBuffer();
+			description.append(task.getPercentDone());
+			appendHtmlEscaped("%\n", description);
+			appendHtmlEscaped(task.getDescription(), description);
+
+			//			System.out.println(task);
 			
-			int taskWidth = (int) (task.getDurationMillis() * widthFactor) ;
-			int doneWidth = (int) ((double)taskWidth * (double)task.percentDone/100d);
+			int taskWidth = (int) (task.getDurationMillis() * (dayMillis/workMillisPerDay) * widthFactor) ;
+			int doneWidth = (int) ((double)taskWidth * (double)task.getPercentDone()/100d);
 			int left = (int) ((double)(task.getBeginMillis() - startDate.getTime()) * widthFactor);
 			
-			int top = taskCount++ * 30;
+			int top = taskCount++ * 30 + 25;
 			if(task.getPercentDone() > 0)
 			{
-				sb.append("<div title='"+task.getPercentDone()+"%' class='done' style=' top:"+top+"px; left:"+left+"px; width:"+doneWidth+"px;'>&nbsp;</div>");
+				sb.append("<div title='");
+				sb.append(description);
+				sb.append("' class='done' style=' top:"+top+"px; left:"+left+"px; width:"+doneWidth+"px;'>&nbsp;</div>");
 			}
 			sb.append("<div ");
 			sb.append("title='");
-			sb.append(task.getDescription());
+			sb.append(description);
 			sb.append("' class='task' ");
 			sb.append("style='top:");
 			sb.append(top);
@@ -151,7 +237,7 @@ public class Layout
 			sb.append("px; text-indent:");
 			sb.append(taskWidth - doneWidth + 5);
 			sb.append("px'>");
-			sb.append(task.getName());
+			appendHtmlEscaped(task.getName(), sb);
 			appendLine("</div>");
 		}
 		
@@ -159,6 +245,20 @@ public class Layout
 		appendLine("</html>");
 		
 		System.out.println(sb.toString());
+	}
+	
+	public String getHTML()
+	{
+		return sb.toString();
+	}
+	
+	/**
+	 * default: 8
+	 * @param hours
+	 */
+	public void setWorkingHoursPerDay(int hours)
+	{
+		workMillisPerDay = hours*60*60*1000;
 	}
 	
 

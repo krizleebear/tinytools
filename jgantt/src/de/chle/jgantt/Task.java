@@ -6,12 +6,12 @@ import java.util.Date;
 
 public class Task
 {
-	String name;
-	String description;
-	int durationHours;
-	Date dueDate;
-	int percentDone;
-	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	private static SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
+	private String name;
+	private String description;
+	private int durationHours;
+	private Date dueDate;
+	private int percentDone;
 	
 	/**
 	 * Define date as string with pattern "yyyy-MM-dd"
@@ -24,7 +24,7 @@ public class Task
 	 */
 	public Task(String name, String description, int durationHours, String dueDateString, int percentDone) throws ParseException
 	{
-		this(name, description, durationHours, sdf.parse(dueDateString), percentDone);
+		this(name, description, durationHours, dateformat.parse(dueDateString), percentDone);
 	}
 	
 	public Task(String name, String description, int durationHours, Date dueDate, int percentDone)
@@ -62,7 +62,7 @@ public class Task
 		return name;
 	}
 
-	public Object getDescription()
+	public String getDescription()
 	{
 		return description;
 	}
