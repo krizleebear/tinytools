@@ -11,6 +11,7 @@ public class Configuration
 	/* settings */
 	private Locale locale = Locale.GERMANY;
 	private DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
+	private long workMillisPerDay = 8*60*60*1000; //8 working hours a day
 
 	private Configuration()
 	{
@@ -59,6 +60,18 @@ public class Configuration
 		this.dateformat = dateformat;
 	}
 
+	public long getWorkMillisPerDay()
+	{
+		return workMillisPerDay;
+	}
 	
+	/**
+	 * default: 8 working hours per day
+	 * @param hours
+	 */
+	public void setWorkingHoursPerDay(int hours)
+	{
+		workMillisPerDay = hours * 60*60*1000;
+	}
 	
 }
