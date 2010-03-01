@@ -40,42 +40,8 @@ public class Layout
 	
 	private int getWeeksBetween(Date startDate, Date endDate)
 	{
-		Calendar start = Calendar.getInstance(Configuration.getInstance().getLocale());
-		start.clear();
-		start.setTime(startDate);
-		int startYear = start.get(Calendar.YEAR);
-		int startWeek = start.get(Calendar.WEEK_OF_YEAR);
-		
-		Calendar end = Calendar.getInstance(Configuration.getInstance().getLocale());
-		end.clear();
-		end.setTime(endDate);
-		int endYear = end.get(Calendar.YEAR);
-		int endWeek = end.get(Calendar.WEEK_OF_YEAR);
-		
-		// very simple if in same year:
-		if(startYear==endYear)
-		{
-			return endWeek - startWeek;
-		}
-		
-		int numWeeks = 1; //one is minimum
-		
-		/* first year */
-		numWeeks += (start.getActualMaximum(Calendar.WEEK_OF_YEAR) - startWeek);
-
-		/* years between */
-		for(int i=startYear+1; i<endYear; i++)
-		{
-			Calendar currentYear = Calendar.getInstance();
-			
-			currentYear.set(Calendar.YEAR, i);
-			numWeeks += currentYear.getActualMaximum(Calendar.WEEK_OF_YEAR) + 1; //starting at 0
-		}
-		
-		/* end year */
-		numWeeks += endWeek;
-		
-		return numWeeks;
+		long millisBetween = endDate.getTime()-startDate.getTime();
+		return (int)(Math.ceil((double)millisBetween / ((double)dayMillis*7)));
 	}
 	
 	private void addWeeks()
@@ -140,6 +106,11 @@ public class Layout
 		}
 	}
 	
+	private void addBorder()
+	{
+		appendLine("<div style='z-index:300; position:absolute; top:0px; left:0px; width:"+width+"px; height:"+height+"px; border:1px solid black'>&nbsp;</div>");
+	}
+	
 	private void addMonth(Calendar cal)
 	{
 		Calendar monthCal = (Calendar) cal.clone();
@@ -198,8 +169,6 @@ public class Layout
 	 */
 	public void layout(List<Task> tasks, List<Milestone> milestones)
 	{
-
-		
 		appendLine("<html>");
 		/* HTML header, incl. CSS style sheets */
 		appendLine("<head>");
@@ -209,6 +178,8 @@ public class Layout
 		
 		/* HTML body */
 		appendLine("<body onload='updateToday()' style='position: absolute; top:20px; left:20px; margin: 40px; font-family: Arial; font-size: 10px'>");
+		
+		addBorder();
 		
 		/* years, months and calendar week labels */
 		addWeeks();

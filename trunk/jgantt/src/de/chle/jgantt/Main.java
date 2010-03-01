@@ -26,7 +26,7 @@ public class Main
 		/* Configuration class offers some basic options */
 		Configuration.getInstance().setLocale(Locale.GERMANY);
 		
-		Layout layouter = new Layout(dateParser.parse("2009-12-24"), dateParser.parse("2011-01-31"), 1000, 300);
+		Layout layouter = new Layout(dateParser.parse("2010-01-01"), dateParser.parse("2010-03-31"), 1000, 300);
 		layouter.layout(tasks, milestones);
 		
 		String html = layouter.getHTML();
