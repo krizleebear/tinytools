@@ -18,10 +18,14 @@ public class Layout
 	private int width, height;
 	private StringBuffer sb = new StringBuffer(2048);
 	private static long dayMillis = 24*60*60*1000;
+	long viewMillis = -1;
+	double widthFactor = 0;
 	
 	public Layout(Date startDate, Date endDate, int width, int height)
 	{
 		super();
+		viewMillis = endDate.getTime() - startDate.getTime();
+		widthFactor = ((double)width / (double)viewMillis);
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.width = width;
@@ -74,7 +78,7 @@ public class Layout
 		return numWeeks;
 	}
 	
-	private void addWeeks(double widthFactor)
+	private void addWeeks()
 	{
 		/* count number of total weeks to show */
 		int totalWeeks = getWeeksBetween(startDate, endDate);
@@ -98,18 +102,18 @@ public class Layout
 			
 			int currentYear = cal.get(Calendar.YEAR);
 			int currentWeek = cal.get(Calendar.WEEK_OF_YEAR);
-			int left = (int) ((double)(cal.getTime().getTime() - startDate.getTime()) * widthFactor);
+			int left = dateToPixels(cal.getTime());
 			
 			if(currentWeek==1 || (!yearAlreadyPrinted ))
 			{
-				addYear(cal, widthFactor);
+				addYear(cal);
 				yearAlreadyPrinted = true;
 			}
 			
 			int currentMonth = cal.get(Calendar.MONTH);
 			if(currentMonth != lastMonth)
 			{
-				addMonth(cal, widthFactor);
+				addMonth(cal);
 				lastMonth = currentMonth;
 			}
 			
@@ -136,28 +140,27 @@ public class Layout
 		}
 	}
 	
-	private void addMonth(Calendar cal, double widthFactor)
+	private void addMonth(Calendar cal)
 	{
 		Calendar monthCal = (Calendar) cal.clone();
 		monthCal.set(Calendar.DAY_OF_MONTH, 1); //use 1st of month to display
 		
-		int left = (int) ((double)(monthCal.getTime().getTime() - startDate.getTime()) * widthFactor);
+		int left = dateToPixels(monthCal.getTime());
 		String[] months = Configuration.getInstance().getMonths();
 		String month = months[monthCal.get(Calendar.MONTH)];
 		appendLine("<div class='month' style='left:"+left+"px'>"+month+"</div>");
 	}
 	
 	private int yearZIndex = 6; //newer year label should overlap the old year (if startDate is very near to beginning of next year)
-	private void addYear(Calendar cal, double widthFactor)
+	private void addYear(Calendar cal)
 	{
 		Calendar yearCal = (Calendar) cal.clone();
 		int left = 0;
 		if(yearCal.get(Calendar.WEEK_OF_YEAR) == 1)
 		{
 			yearCal.set(Calendar.DAY_OF_YEAR, 1); //use January 1st to display year label 
-			left = (int) ((double)(yearCal.getTime().getTime() - startDate.getTime()) * widthFactor);
+			left = dateToPixels(yearCal.getTime());
 		}
-		
 		appendLine("<div class='year' style='left:"+left+"px; z-index: "+ yearZIndex++ +"'>"+yearCal.get(Calendar.YEAR)+"</div>");
 	}
 	
@@ -195,37 +198,60 @@ public class Layout
 	 */
 	public void layout(List<Task> tasks, List<Milestone> milestones)
 	{
-		long viewMillis = endDate.getTime() - startDate.getTime();
-		double widthFactor = ((double)width / (double)viewMillis);
+
 		
 		appendLine("<html>");
-		
 		/* HTML header, incl. CSS style sheets */
 		appendLine("<head>");
 		appendStyleSheets();
+		appendScripts();
 		appendLine("</head>");
 		
 		/* HTML body */
-		appendLine("<body style='position: absolute; top:20px; left:20px; margin: 40px; font-family: Arial; font-size: 10px'>");
+		appendLine("<body onload='updateToday()' style='position: absolute; top:20px; left:20px; margin: 40px; font-family: Arial; font-size: 10px'>");
 		
 		/* years, months and calendar week labels */
-		addWeeks(widthFactor);
+		addWeeks();
 		
-		/* current date indicator line */
-		Date today = new Date();
-		int todayleft = (int) ((double)(today.getTime() - startDate.getTime()) * widthFactor);
-		appendLine("<div class='today' style='left: "+todayleft+"px'>&nbsp;</div>");
+		/* current date indicator line as javascript */
+		addCurrentDate();
 		
 		/* tasks */
-		addTasks(tasks, widthFactor);
+		addTasks(tasks);
 		
 		/* milestones */
-		addMilestones(milestones, widthFactor);
+		addMilestones(milestones);
 		
 		appendLine("</body>");
 		appendLine("</html>");
 	}
 	
+	private int dateToPixels(Date date)
+	{
+		return (int) ((double)(date.getTime() - startDate.getTime()) * widthFactor);
+	}
+	
+	private void appendScripts()
+	{
+		appendLine("<script type='text/javascript'>");
+		appendLine("function updateToday() ");
+		appendLine("{");
+		appendLine("   var todayDiv = document.getElementById('todayIndicator');");
+		appendLine("   if(todayDiv == null) return;");
+		appendLine("   var now = new Date();");
+		appendLine("   var left = ((now.getTime() - "+startDate.getTime()+") * "+widthFactor+");");
+		appendLine("   todayDiv.style.left = left;");
+		appendLine("}");
+		appendLine("</script>");
+	}
+
+	private void addCurrentDate()
+	{
+		Date today = new Date();
+		int todayleft = dateToPixels(today);
+		appendLine("<div id='todayIndicator' class='today' style='left: "+todayleft+"px'>&nbsp;</div>");
+	}
+
 	/**
 	 * Clears the buffer
 	 */
@@ -258,19 +284,19 @@ public class Layout
 		appendLine("</style>");
 	}
 
-	private void addMilestones(List<Milestone> milestones, double widthFactor)
+	private void addMilestones(List<Milestone> milestones)
 	{
 		if(milestones==null)
 			return;
 		
 		for(Milestone milestone : milestones)
 		{
-			int left = (int) ((double)(milestone.getDueDate().getTime() - startDate.getTime()) * widthFactor);
+			int left = dateToPixels(milestone.getDueDate());
 			appendLine("<div class='milestone' style='left: "+left+"px;'>"+milestone.getName()+"</div>");
 		}
 	}
 
-	private void addTasks(List<Task> tasks, double widthFactor)
+	private void addTasks(List<Task> tasks)
 	{
 		if(tasks==null)
 			return;
@@ -280,12 +306,12 @@ public class Layout
 		{
 			StringBuffer description = new StringBuffer();
 			description.append(task.getPercentDone());
-			description.append("% &#13; ");
+			description.append("% \n");
 			appendHtmlEscaped(task.getDescription(), description);
 
 			int taskWidth = (int) (task.getDurationMillis() * (dayMillis/Configuration.getInstance().getWorkMillisPerDay()) * widthFactor) ;
 			int doneWidth = (int) ((double)taskWidth * (double)task.getPercentDone()/100d);
-			int left = (int) ((double)(task.getBeginMillis() - startDate.getTime()) * widthFactor);
+			int left = dateToPixels(task.getBeginDate());
 			
 			int top = taskCount++ * 30 + 25;
 			if(task.getPercentDone() > 0)

@@ -10,8 +10,18 @@
 .today  { top: 0px; height: 300px; width: 1px; background-color:none; position: absolute; z-index:100; text-align:left; padding-left:2px; vertical-align:text-bottom; font-size: 12px; border-left:1px solid red; white-space:nowrap;}
 .milestone { background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAcCAYAAABh2p9gAAAAzElEQVR42mNgIAKYm5srMVALAA0TBOK7QOxCLQM7gPg/yFBqGGYMNQyGyyk18AyagSBsTKlX0TEoPAVJNcwFh2EwPJPUWH1HwEAQTiPWwN1EGPYfaqkxIcPKiTQMhs/gDE+gRCiJhuEOT2h6e0emgajpExoJZygwDIZdYAauooJhiEiikmGI8CQhmRDtQljxRKmBxtSM5TRsSSeNaumQiBKG9JxCoAwkLy/DKiSqljZE5uuZ5JTYM6lWYqNVn9SpU3BUBeWDq14mp+UAAFEf0ecVStEUAAAAAElFTkSuQmCC) bottom left no-repeat; position: absolute; z-index:20; width:20px; height:40px; text-align:left; text-indent:8px; vertical-align:bottom; top: -26px; z-index:105; white-space:nowrap; }
 </style>
+<script type='text/javascript'>
+function updateToday() 
+{
+   var todayDiv = document.getElementById('todayIndicator');
+   if(todayDiv == null) return;
+   var now = new Date();
+   var left = ((now.getTime() - 1261609200000) * 2.8719786784302914E-8);
+   todayDiv.style.left = left;
+}
+</script>
 </head>
-<body style='position: absolute; top:20px; left:20px; margin: 40px; font-family: Arial; font-size: 10px'>
+<body onload='updateToday()' style='position: absolute; top:20px; left:20px; margin: 40px; font-family: Arial; font-size: 10px'>
 <div class='year' style='left:0px; z-index: 6'>2009</div>
 <div title='2009/52' class='calendarweekEven' style='width:16px; left:-7px'>52</div>
 <div title='2009/53' class='calendarweekOdd' style='width:16px; left:9px'>53</div>
@@ -87,9 +97,13 @@
 <div title='2011/3' class='calendarweekEven' style='width:16px; left:965px'>3</div>
 <div title='2011/4' class='calendarweekOdd' style='width:16px; left:982px'>4</div>
 <div title='2011/5' class='calendarweekEven' style='width:16px; left:1000px'>5</div>
-<div class='today' style='left: 166px'>&nbsp;</div>
-<div title='50% &#13; erster&#32;Task' class='done' style=' top:25px; left:157px; width:6px;'>&nbsp;</div><div title='50% &#13; erster&#32;Task' class='task' style='top:25px;left:163px; width:6px; text-indent:11px'>&#35;1</div>
-<div title='75% &#13; zweiter&#32;Task' class='done' style=' top:55px; left:167px; width:2px;'>&nbsp;</div><div title='75% &#13; zweiter&#32;Task' class='task' style='top:55px;left:169px; width:1px; text-indent:6px'>&#35;2</div>
+<div id='todayIndicator' class='today' style='left: 166px'>&nbsp;</div>
+<div title='50% 
+erster&#32;Task' class='done' style=' top:25px; left:157px; width:6px;'>&nbsp;</div><div title='50% 
+erster&#32;Task' class='task' style='top:25px;left:163px; width:6px; text-indent:11px'>&#35;1</div>
+<div title='75% 
+zweiter&#32;Task' class='done' style=' top:55px; left:167px; width:2px;'>&nbsp;</div><div title='75% 
+zweiter&#32;Task' class='task' style='top:55px;left:169px; width:1px; text-indent:6px'>&#35;2</div>
 <div class='milestone' style='left: 240px;'>B2 sample</div>
 </body>
 </html>
