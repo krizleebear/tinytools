@@ -2,9 +2,7 @@ package tinytools.jsync;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map.Entry;
 
 public class FileFinder {
@@ -104,7 +102,7 @@ public class FileFinder {
 			if(slaveIndex.containsKey(entry.getKey())) //Datei ist auch beim Slave vorhanden
 			{
 				//Datei-Infos vergleichen
-				if(!masterInfo.equals(slaveInfo)) //Datei wurde auf dem Master geändert
+				if(!masterInfo.equals(slaveInfo)) //Datei wurde auf dem Master geÃ¤ndert
 				{
 					System.out.println("CHANGED: "+masterKey);
 					changes.modifiedFiles.add(masterInfo.file);
@@ -126,7 +124,7 @@ public class FileFinder {
 		{
 			String slaveKey = entry.getKey();
 			
-			if(!fileIndex.containsKey(slaveKey)) //Datei wurde auf dem Master gelöscht
+			if(!fileIndex.containsKey(slaveKey)) //Datei wurde auf dem Master gelÃ¶scht
 			{
 				System.out.println("DELETED: "+slaveKey);
 				changes.deletedFiles.add(entry.getValue().file);
