@@ -58,7 +58,7 @@ public class FileFinder {
 			if(entry.getName().startsWith(".")) //ignore hidden files
 				continue;
 			
-			if(!entry.isDirectory()) //don`t add directories to found files
+			if(!entry.isDirectory()) //don't add directories to found files
 			{
 				foundFileCount++;
 				fileIndex.put(getRelativePath(entry), new FileInfo(entry));
@@ -92,39 +92,39 @@ public class FileFinder {
 	
 	public void compareToSlave(FileFinder slave)
 	{
-		for(Entry<String, FileInfo> entry : fileIndex.entrySet()) //Master-Index durchlaufen
+		for(Entry<String, FileInfo> entry : fileIndex.entrySet()) //run over master index
 		{
 			HashMap<String, FileInfo> slaveIndex = slave.fileIndex;
 			String masterKey = entry.getKey();
 			FileInfo masterInfo = entry.getValue();
 			FileInfo slaveInfo = slaveIndex.get(entry.getKey());
 			
-			if(slaveIndex.containsKey(entry.getKey())) //Datei ist auch beim Slave vorhanden
+			if(slaveIndex.containsKey(entry.getKey())) //file is also existing on slave
 			{
-				//Datei-Infos vergleichen
-				if(!masterInfo.equals(slaveInfo)) //Datei wurde auf dem Master geändert
+				//compare file information
+				if(!masterInfo.equals(slaveInfo)) //file was changed on master
 				{
 					System.out.println("CHANGED: "+masterKey);
 					changes.modifiedFiles.add(masterInfo.file);
 				}
-				else //Datei ist synchron
+				else //file is equal on master and slave
 				{
 					System.out.println("EQUALS: "+masterKey);
 					changes.equalFiles.add(masterInfo.file);
 				}
 			}
-			else //Datei ist auf dem Master neu dazugekommen
+			else //file was added on master
 			{
 				System.out.println("ADDED: "+masterKey);
 				changes.addedFiles.add(masterInfo.file);
 			}
 		}
 		
-		for(Entry<String, FileInfo> entry : slave.fileIndex.entrySet()) //Slave-Index durchlaufen
+		for(Entry<String, FileInfo> entry : slave.fileIndex.entrySet()) //run over slave index
 		{
 			String slaveKey = entry.getKey();
 			
-			if(!fileIndex.containsKey(slaveKey)) //Datei wurde auf dem Master gelöscht
+			if(!fileIndex.containsKey(slaveKey)) //file was deleted on master
 			{
 				System.out.println("DELETED: "+slaveKey);
 				changes.deletedFiles.add(entry.getValue().file);
