@@ -1,22 +1,21 @@
 package tinytools.jsync;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.HashSet;
-import java.util.Hashtable;
 
-public class ShellScriptGenerator {
+public class ShellScriptGenerator implements ISynchronizer {
 
 	private ChangeSet changes;
-	File masterDir, slaveDir;
+	File masterDir, slaveDir, shellScriptFile;
 	
-	public ShellScriptGenerator(ChangeSet changes, File masterDir, File slaveDir)
+	public ShellScriptGenerator(File shellScriptFile)
 	{
-		this.masterDir = masterDir;
-		this.slaveDir = slaveDir;
-		this.changes = changes;
+		this.shellScriptFile = shellScriptFile;
 	}
 	
-	public String generate()
+	private String generate()
 	{
 		StringBuilder sb = new StringBuilder();
 		
@@ -88,5 +87,33 @@ public class ShellScriptGenerator {
 		sb.append("rm \"");
 		sb.append(escape(f.getAbsolutePath()));
 		sb.append("\"\n");
+	}
+
+	@Override
+	public void setChanges(ChangeSet changes)
+	{
+		this.changes = changes;
+	}
+
+	@Override
+	public void setMasterDir(File masterDir)
+	{
+		this.masterDir = masterDir;
+	}
+
+	@Override
+	public void setSlaveDir(File slaveDir)
+	{
+		this.slaveDir = slaveDir;
+	}
+
+	@Override
+	public void synchronize() throws Exception
+	{
+		String shellScript = generate();
+		PrintWriter pw = new PrintWriter(shellScriptFile);
+		pw.print(shellScript);
+		pw.flush();
+		pw.close();
 	}
 }

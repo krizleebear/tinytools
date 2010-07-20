@@ -2,20 +2,25 @@ package tinytools.jsync;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 
-public class JSync {
-
+public class JSync 
+{
 	/**
 	 * @param args
 	 * @throws IOException 
 	 */
-	public static void main(String[] args) throws IOException 
+	public static void main(String[] args) throws Exception 
 	{
 		if(args.length < 2)
 		{
-			System.out.println("Usage: java -jar jSync.jar <Master-Directory> <Slave-Directory>");
+			System.out.println("Usage: java -jar jSync.jar <Master-Directory> <Slave-Directory> <shellScriptName>");
 			System.exit(0);
+		}
+		
+		File shellScriptFile = new File("runSync.sh");
+		if(args.length >= 3)
+		{
+			shellScriptFile  = new File(args[2]);
 		}
 		
 		FileFinder master = new FileFinder(args[0]);
@@ -26,12 +31,10 @@ public class JSync {
 
 		master.compareToSlave(slave);
 		
-		ShellScriptGenerator generator = new ShellScriptGenerator(master.getChanges(), master.getPath(), slave.getPath());
-		String shellScript = generator.generate();
-		
-		PrintWriter pw = new PrintWriter(new File("runSync.sh"));
-		pw.print(shellScript);
-		pw.flush();
-		pw.close();
+		ShellScriptGenerator generator = new ShellScriptGenerator(shellScriptFile);
+		generator.setChanges(master.getChanges());
+		generator.setMasterDir(master.getPath());
+		generator.setSlaveDir(slave.getPath());
+		generator.synchronize();
 	}
 }
