@@ -3,62 +3,90 @@ package tinytools.jsync;
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.HashSet;
+import java.util.List;
 
-public class ShellScriptGenerator extends SynchronizerBase {
-
+public class ShellScriptGenerator extends SynchronizerBase 
+{
 	private File shellScriptFile;
+	private StringBuilder sb = new StringBuilder();
+	private HashSet<String> createdDirectories = new HashSet<String>();
 	
 	public ShellScriptGenerator()
 	{
 		this.shellScriptFile = new File(options.getShellScriptFile());
 	}
 	
-	private String generate()
+	@Override
+	protected void pre() throws Exception
 	{
-		StringBuilder sb = new StringBuilder();
-		
-		sb.append("#!/bin/sh \n");
-		
-		for(File f : changes.addedFiles)
-		{
-			appendCopy(sb, f);
-		}
-		
-		/* should we also delete files? */
-		if(options.isDeleteOnSlave())
-		{
-			for(File f : changes.deletedFiles)
-			{
-				appendDelete(sb, f);
-			}
-		}
-		
-		for(File f : changes.modifiedFiles)
-		{
-			appendCopy(sb, f);
-		}
-		
-//		for(File f : changes.equalFiles)
-//		{
-//			
-//		}
-		
-		return sb.toString();
+		sb = new StringBuilder();
+		appendLine("#!/bin/sh");
 	}
 	
-	private void appendCopy(StringBuilder sb, File srcFile)
+	@Override
+	protected void post() throws Exception
 	{
-		File destFile = new File(slaveDir, srcFile.getAbsolutePath().substring(masterDir.getAbsolutePath().length()));
+		PrintWriter pw = new PrintWriter(shellScriptFile);
+		pw.print(sb.toString());
+		pw.flush();
+		pw.close();
 		
-		checkPathTo(sb, destFile);
-		
-		sb.append("cp -pv \"");
-		sb.append(escape(srcFile.getAbsolutePath()));
-		sb.append("\" \"");
-		
-		sb.append(escape(destFile.getAbsolutePath()));
-		
-		sb.append("\"\n");
+		sb = new StringBuilder();
+	}
+	
+	@Override
+	protected void handleAddedFiles(List<File> added) throws Exception
+	{
+		for(File f : changes.addedFiles)
+		{
+			File destFile = new File(slaveDir, f.getAbsolutePath().substring(masterDir.getAbsolutePath().length()));
+			
+			checkPathTo(sb, destFile);
+			
+			sb.append("cp -pv \"");
+			sb.append(escape(f.getAbsolutePath()));
+			sb.append("\" \"");
+			
+			sb.append(escape(destFile.getAbsolutePath()));
+			
+			sb.append("\"\n");
+		}
+	}
+
+	@Override
+	protected void handleDeletedFiles(List<File> deleted) throws Exception
+	{
+		for(File f : changes.deletedFiles)
+		{
+			sb.append("rm \"");
+			sb.append(escape(f.getAbsolutePath()));
+			sb.append("\"\n");
+		}
+	}
+
+	@Override
+	protected void handleModifiedFiles(List<File> modified) throws Exception
+	{
+		for(File f : changes.modifiedFiles)
+		{
+			File destFile = new File(slaveDir, f.getAbsolutePath().substring(masterDir.getAbsolutePath().length()));
+			
+			checkPathTo(sb, destFile);
+			
+			sb.append("cp -pv \"");
+			sb.append(escape(f.getAbsolutePath()));
+			sb.append("\" \"");
+			
+			sb.append(escape(destFile.getAbsolutePath()));
+			
+			sb.append("\"\n");
+		}
+	}
+
+	private void appendLine(String msg)
+	{
+		sb.append(msg);
+		sb.append("\n");
 	}
 	
 	private String escape(String path)
@@ -66,41 +94,21 @@ public class ShellScriptGenerator extends SynchronizerBase {
 		return path.replace("`", "\\`").replace("\"", "\\\"");
 	}
 	
-	HashSet<String> createdDirectories = new HashSet<String>();
-	
 	private void checkPathTo(StringBuilder sb, File destFile) 
 	{
 		File destParent = destFile.getParentFile();
 		String destPath = destParent.getAbsolutePath();
 
-		if(destParent.exists()) //Zielpfad existiert bereits
+		if(destParent.exists()) //dest path already exists
 			return;
 		
-		if(createdDirectories.contains(destPath)) //Pfad wird von uns bereits im Shellskript angelegt
+		if(createdDirectories.contains(destPath)) //path was already created by our script
 			return;
 		
 		sb.append("mkdir -p \"");
 		sb.append(destPath);
 		sb.append("\"\n");
 		
-		createdDirectories.add(destPath); //Verzeichnis merken
+		createdDirectories.add(destPath); //remember created path
 	}
-
-	private void appendDelete(StringBuilder sb, File f)
-	{
-		sb.append("rm \"");
-		sb.append(escape(f.getAbsolutePath()));
-		sb.append("\"\n");
-	}
-
-	@Override
-	public void synchronize() throws Exception
-	{
-		String shellScript = generate();
-		PrintWriter pw = new PrintWriter(shellScriptFile);
-		pw.print(shellScript);
-		pw.flush();
-		pw.close();
-	}
-
 }
