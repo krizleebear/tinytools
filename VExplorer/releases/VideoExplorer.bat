@@ -1,1 +1,0 @@
-java -jar VExplorer.jar
