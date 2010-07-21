@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<project name="jSync" default="jar">
+    <target name="clean" description="remove intermediate files">
+        <delete dir="bin"/>
+    </target>
+    <target name="compile" description="compile the Java source code to class files">
+        <mkdir dir="bin"/>
+        <javac srcdir="src" destdir="bin"/>
+    </target>
+    <target name="jar" depends="compile" description="create a Jar file for the application">
+        <jar destfile="jSync.jar">
+            <fileset dir="bin" includes="**/*.class"/>
+            <manifest>
+                <attribute name="Main-Class" value="tinytools.jsync.JSync"/>
+            </manifest>
+        </jar>
+    </target>
+</project>
