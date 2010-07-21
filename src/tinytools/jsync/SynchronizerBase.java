@@ -36,6 +36,12 @@ public abstract class SynchronizerBase implements ISynchronizer
 	@Override
 	public void synchronize() throws Exception
 	{
+		if(options.isOnlyListModified())
+		{
+			listChanges();
+			return;
+		}
+		
 		pre();
 
 		handleAddedFiles(changes.addedFiles);
@@ -46,8 +52,32 @@ public abstract class SynchronizerBase implements ISynchronizer
 		{
 			handleDeletedFiles(changes.deletedFiles);
 		}
+		else
+		{
+			if(changes.deletedFiles != null && changes.deletedFiles.size()>0)
+			{
+				System.out.println(changes.deletedFiles.size() + " files have been deleted on master. This changes will be ignored. Use --deleteOnSlave to do a full sync.");
+				changes.deletedFiles.clear();
+			}
+		}
 
 		post();
+	}
+	
+	public void listChanges()
+	{
+		for(File addedFile : changes.addedFiles)
+		{
+			System.out.println("+ " + addedFile.getAbsolutePath());
+		}
+		for(File deletedFile : changes.deletedFiles)
+		{
+			System.out.println("- " + deletedFile.getAbsolutePath());	
+		}
+		for(File modifiedFile : changes.modifiedFiles)
+		{
+			System.out.println("~ " + modifiedFile.getAbsolutePath());
+		}
 	}
 	
 	protected abstract void pre() throws Exception;

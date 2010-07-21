@@ -48,8 +48,7 @@ public class FileFinder {
 		absoluteRootPath = rootDir.getAbsolutePath();
 		recursiveSearch(rootDir);
 
-		System.out.println();
-		System.out.println("Found "+foundFileCount+" files in "+absoluteRootPath);
+		printVerbose("Found "+foundFileCount+" files in "+absoluteRootPath);
 	}
 	
 	private void recursiveSearch(File dir)
@@ -57,19 +56,16 @@ public class FileFinder {
 		File[] entries = dir.listFiles();
 		for(File entry : entries)
 		{
-			if(entry.getName().startsWith(".")) //ignore hidden files
+			if(entry.isHidden() ) //ignore hidden files
 				continue;
 			
-			if(!entry.isDirectory()) //don't add directories to found files
-			{
-				foundFileCount++;
-				fileIndex.put(getRelativePath(entry), new FileInfo(entry));
-			}
-			else
+			foundFileCount++;
+			fileIndex.put(getRelativePath(entry), new FileInfo(entry));
+
+			if(entry.isDirectory())
 			{
 				recursiveSearch(entry);  //recursive search in directories
 			}
-			
 			
 			if(foundFileCount%100==0)
 				System.out.print("."); //user feedback (still-alive)

@@ -16,4 +16,24 @@
             </manifest>
         </jar>
     </target>
+	<target name="cleanTestDirs">
+		<delete includeemptydirs="true">
+			<fileset dir="./testSlave" includes="**/*"/>
+		</delete>
+		<exec dir="./testSlave" executable="svn">
+			<arg line="up"/>
+		</exec>
+		<mkdir dir="./testMaster/emptyDir"/>
+		<mkdir dir="./testSlave/folderDeletedOnMaster"/>
+	</target>
+	<target name="run" depends="compile, cleanTestDirs">
+		<java classname="tinytools.jsync.JSync">
+			<classpath>
+				<pathelement path="bin"/>
+				<pathelement location="lib/jewelcli-0.6.jar"/>
+			</classpath>
+			<arg line="--masterDir ./testMaster"/>
+			<arg line="--slaveDir ./testSlave"/>
+		</java>
+	</target>
 </project>

@@ -19,6 +19,9 @@ public class ShellScriptGenerator extends SynchronizerBase
 	@Override
 	protected void pre() throws Exception
 	{
+		System.out.println("Shell script with sync commands will be written to: "
+				+ shellScriptFile.getAbsolutePath());
+		
 		sb = new StringBuilder();
 		appendLine("#!/bin/sh");
 	}
@@ -39,6 +42,9 @@ public class ShellScriptGenerator extends SynchronizerBase
 	{
 		for(File f : changes.addedFiles)
 		{
+			if(f.isDirectory() && !isLeafDirectory(f))
+				continue;
+			
 			File destFile = new File(slaveDir, f.getAbsolutePath().substring(masterDir.getAbsolutePath().length()));
 			
 			checkPathTo(sb, destFile);
@@ -110,5 +116,13 @@ public class ShellScriptGenerator extends SynchronizerBase
 		sb.append("\"\n");
 		
 		createdDirectories.add(destPath); //remember created path
+	}
+	
+	private boolean isLeafDirectory(File f)
+	{
+		if(f==null || !f.exists() || !f.isDirectory())
+			return false;
+
+		return f.list().length == 0;
 	}
 }
