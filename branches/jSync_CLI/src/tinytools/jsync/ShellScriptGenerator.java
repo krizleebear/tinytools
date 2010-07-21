@@ -4,15 +4,12 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.HashSet;
 
-public class ShellScriptGenerator implements ISynchronizer {
+public class ShellScriptGenerator extends SynchronizerBase {
 
-	private ChangeSet changes;
-	File masterDir, slaveDir, shellScriptFile;
-	Options opts;
+	private File shellScriptFile;
 	
-	public ShellScriptGenerator(Options options)
+	public ShellScriptGenerator()
 	{
-		this.opts = options;
 		this.shellScriptFile = new File(options.getShellScriptFile());
 	}
 	
@@ -28,7 +25,7 @@ public class ShellScriptGenerator implements ISynchronizer {
 		}
 		
 		/* should we also delete files? */
-		if(opts.isDeleteOnSlave())
+		if(options.isDeleteOnSlave())
 		{
 			for(File f : changes.deletedFiles)
 			{
@@ -97,24 +94,6 @@ public class ShellScriptGenerator implements ISynchronizer {
 	}
 
 	@Override
-	public void setChanges(ChangeSet changes)
-	{
-		this.changes = changes;
-	}
-
-	@Override
-	public void setMasterDir(File masterDir)
-	{
-		this.masterDir = masterDir;
-	}
-
-	@Override
-	public void setSlaveDir(File slaveDir)
-	{
-		this.slaveDir = slaveDir;
-	}
-
-	@Override
 	public void synchronize() throws Exception
 	{
 		String shellScript = generate();
@@ -123,4 +102,5 @@ public class ShellScriptGenerator implements ISynchronizer {
 		pw.flush();
 		pw.close();
 	}
+
 }
