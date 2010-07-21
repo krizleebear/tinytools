@@ -10,6 +10,7 @@
     <target name="jar" depends="compile" description="create a Jar file for the application">
         <jar destfile="jSync.jar">
             <fileset dir="bin" includes="**/*.class"/>
+        	<zipfileset src="lib/jewelcli-0.6.jar" includes="**/*"/>
             <manifest>
                 <attribute name="Main-Class" value="tinytools.jsync.JSync"/>
             </manifest>
