@@ -72,7 +72,8 @@ public class JSync
 				.println("Shell script with sync commands will be written to: "
 						+ shellScriptFile.getAbsolutePath());
 
-		ShellScriptGenerator generator = new ShellScriptGenerator(options);
+		ShellScriptGenerator generator = new ShellScriptGenerator();
+		generator.setOptions(options);
 		generator.setChanges(master.getChanges());
 		generator.setMasterDir(master.getPath());
 		generator.setSlaveDir(slave.getPath());
