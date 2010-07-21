@@ -1,7 +1,6 @@
 package tinytools.jsync;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.HashSet;
 
@@ -9,24 +8,32 @@ public class ShellScriptGenerator implements ISynchronizer {
 
 	private ChangeSet changes;
 	File masterDir, slaveDir, shellScriptFile;
+	Options opts;
 	
-	public ShellScriptGenerator(File shellScriptFile)
+	public ShellScriptGenerator(Options options)
 	{
-		this.shellScriptFile = shellScriptFile;
+		this.opts = options;
+		this.shellScriptFile = new File(options.getShellScriptFile());
 	}
 	
 	private String generate()
 	{
 		StringBuilder sb = new StringBuilder();
 		
+		sb.append("#!/bin/sh \n");
+		
 		for(File f : changes.addedFiles)
 		{
 			appendCopy(sb, f);
 		}
 		
-		for(File f : changes.deletedFiles)
+		/* should we also delete files? */
+		if(opts.isDeleteOnSlave())
 		{
-			appendDelete(sb, f);
+			for(File f : changes.deletedFiles)
+			{
+				appendDelete(sb, f);
+			}
 		}
 		
 		for(File f : changes.modifiedFiles)

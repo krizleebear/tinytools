@@ -31,10 +31,12 @@ public class FileFinder {
 	private int foundFileCount = 0;
 	private HashMap<String, FileInfo> fileIndex = new HashMap<String, FileInfo>();
 	private ChangeSet changes = new ChangeSet();
+	private Options options;
 	
-	public FileFinder(String path)
+	public FileFinder(String path, Options options)
 	{
 		rootDir = new File(path);
+		this.options = options;
 	}
 	
 	public void indexFiles() throws IOException
@@ -74,6 +76,14 @@ public class FileFinder {
 		}
 	}
 	
+	private void printVerbose(String msg)
+	{
+		if(options.isVerbose())
+		{
+			System.out.println(msg);
+		}
+	}
+	
 	/**
 	 * Returns the path relative to this FileFinder's root, e.g.:
 	 * \Beatsteaks - Living Targets - 2002
@@ -104,18 +114,18 @@ public class FileFinder {
 				//compare file information
 				if(!masterInfo.equals(slaveInfo)) //file was changed on master
 				{
-					System.out.println("CHANGED: "+masterKey);
+					printVerbose("CHANGED: "+masterKey);
 					changes.modifiedFiles.add(masterInfo.file);
 				}
 				else //file is equal on master and slave
 				{
-					System.out.println("EQUALS: "+masterKey);
+					printVerbose("EQUALS: "+masterKey);
 					changes.equalFiles.add(masterInfo.file);
 				}
 			}
 			else //file was added on master
 			{
-				System.out.println("ADDED: "+masterKey);
+				printVerbose("ADDED: "+masterKey);
 				changes.addedFiles.add(masterInfo.file);
 			}
 		}
@@ -126,7 +136,7 @@ public class FileFinder {
 			
 			if(!fileIndex.containsKey(slaveKey)) //file was deleted on master
 			{
-				System.out.println("DELETED: "+slaveKey);
+				printVerbose("DELETED: "+slaveKey);
 				changes.deletedFiles.add(entry.getValue().file);
 			}
 		}

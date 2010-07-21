@@ -2,36 +2,77 @@ package tinytools.jsync;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
-public class JSync 
+import uk.co.flamingpenguin.jewel.cli.ArgumentValidationException;
+import uk.co.flamingpenguin.jewel.cli.CliFactory;
+
+public class JSync
 {
 	/**
 	 * @param args
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	public static void main(String[] args) throws Exception 
+	public static void main(String[] args) throws Exception
 	{
-		if(args.length < 2)
+		/* parse command line options */
+		Options options = null;
+		try
 		{
-			System.out.println("Usage: java -jar jSync.jar <Master-Directory> <Slave-Directory> <shellScriptName>");
-			System.exit(0);
+			options = CliFactory.parseArguments(Options.class, args);
 		}
-		
-		File shellScriptFile = new File("runSync.sh");
-		if(args.length >= 3)
+		catch (ArgumentValidationException ex)
 		{
-			shellScriptFile  = new File(args[2]);
+			printHelp(ex);
 		}
-		
-		FileFinder master = new FileFinder(args[0]);
+
+		FileFinder master = new FileFinder(options.getMasterDir(), options);
 		master.indexFiles();
-		
-		FileFinder slave = new FileFinder(args[1]);
+
+		FileFinder slave = new FileFinder(options.getSlaveDir(), options);
 		slave.indexFiles();
 
 		master.compareToSlave(slave);
+
+		if(!options.isDeleteOnSlave())
+		{
+			if(master.getChanges().deletedFiles != null)
+			{
+				List<File> deletedFiles = master.getChanges().deletedFiles;
+				System.out.println(deletedFiles.size() + " files have been deleted on master. This changes will be ignored. Use --deleteOnSlave to do a full sync.");
+				master.getChanges().deletedFiles.clear();
+			}
+		}
 		
-		ShellScriptGenerator generator = new ShellScriptGenerator(shellScriptFile);
+		/* should we only generate a shell script? */
+		if (options.isShellScriptFile())
+		{
+			generateShellScript(options, master, slave);
+			System.exit(0);
+		}
+		
+
+	}
+
+	private static void printHelp(ArgumentValidationException ex)
+	{
+		System.err.println(ex.getMessage());
+		System.err.flush();
+		System.out.println();
+		System.out.println("Use --help for help");
+		System.out.flush();
+		System.exit(1);
+	}
+
+	private static void generateShellScript(Options options, FileFinder master,
+			FileFinder slave) throws Exception
+	{
+		File shellScriptFile = new File(options.getShellScriptFile());
+		System.out
+				.println("Shell script with sync commands will be written to: "
+						+ shellScriptFile.getAbsolutePath());
+
+		ShellScriptGenerator generator = new ShellScriptGenerator(options);
 		generator.setChanges(master.getChanges());
 		generator.setMasterDir(master.getPath());
 		generator.setSlaveDir(slave.getPath());
