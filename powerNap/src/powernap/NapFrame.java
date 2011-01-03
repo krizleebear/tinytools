@@ -8,7 +8,8 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
@@ -18,9 +19,14 @@ import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.simplericity.macify.eawt.Application;
+import org.simplericity.macify.eawt.ApplicationEvent;
+import org.simplericity.macify.eawt.ApplicationListener;
+import org.simplericity.macify.eawt.DefaultApplication;
+
 import powernap.Countdown.CountdownListener;
 
-public class NapFrame extends JFrame implements CountdownListener
+public class NapFrame extends JFrame implements CountdownListener, ApplicationListener
 {
 	private static final long serialVersionUID = 1080928685148496207L;
 	private JPanel imgPanel;
@@ -52,7 +58,18 @@ public class NapFrame extends JFrame implements CountdownListener
 		if(Main.IS_MAC)
 		{
 			System.setProperty("apple.laf.useScreenMenuBar", "true");
-			System.setProperty("com.apple.mrj.application.apple.menu.about.name", Main.APP_NAME);  
+			System.setProperty("com.apple.mrj.application.apple.menu.about.name", Main.APP_NAME);
+			
+			Application application = new DefaultApplication();
+			application.addApplicationListener(this);
+			
+			addWindowListener(new WindowAdapter() {
+				public void windowClosing(WindowEvent arg0)
+				{
+					System.out.println("closing window means hiding on OSX...");
+					setVisible(false);
+				}
+			});
 		}
 	}
 
@@ -148,5 +165,37 @@ public class NapFrame extends JFrame implements CountdownListener
 	public void remainingMillis(long remainingMillis)
 	{
 		System.out.println(remainingMillis/1000 + " seconds remaining");		
+	}
+
+	public void handleAbout(ApplicationEvent event)
+	{
+	}
+
+	public void handleOpenApplication(ApplicationEvent event)
+	{
+	}
+
+	public void handleOpenFile(ApplicationEvent event)
+	{
+	}
+
+	public void handlePreferences(ApplicationEvent event)
+	{
+	}
+
+	public void handlePrintFile(ApplicationEvent event)
+	{
+	}
+
+	public void handleQuit(ApplicationEvent event)
+	{
+		//handle osx quit (cmd+q or dock-interaction)
+		System.exit(0);
+	}
+
+	public void handleReOpenApplication(ApplicationEvent event)
+	{
+		//reopening app means setVisible(true) on OSX
+		setVisible(true);
 	}
 }
