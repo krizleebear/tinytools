@@ -29,11 +29,12 @@ import powernap.Countdown.CountdownListener;
 public class NapFrame extends JFrame implements CountdownListener, ApplicationListener
 {
 	private static final long serialVersionUID = 1080928685148496207L;
-	private JPanel imgPanel;
-	private Container contentPane;
-	Countdown countdown = new Countdown();
+	private static final String BACKGROUND_IMAGE = "background.png";
+	
+	private Countdown countdown = new Countdown();
 
-	public static final String BACKGROUND_IMAGE = "background.png";
+	private Container contentPane;
+	private JPanel imgPanel;
 	private JButton btStart;
 	private JTextField tbHours;
 	private JTextField tbMinutes;
@@ -142,7 +143,6 @@ public class NapFrame extends JFrame implements CountdownListener, ApplicationLi
 
 	public void countdownTriggered()
 	{
-		System.out.println("countdown triggered!");
 		if(Main.IS_MAC)
 		{
 			try
