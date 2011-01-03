@@ -1,15 +1,14 @@
 package powernap;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
@@ -19,11 +18,14 @@ import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class NapFrame extends JFrame
+import powernap.Countdown.CountdownListener;
+
+public class NapFrame extends JFrame implements CountdownListener
 {
 	private static final long serialVersionUID = 1080928685148496207L;
 	private JPanel imgPanel;
 	private Container contentPane;
+	Countdown countdown = new Countdown();
 
 	public static final String BACKGROUND_IMAGE = "background.png";
 	private JButton btStart;
@@ -34,6 +36,8 @@ public class NapFrame extends JFrame
 	public NapFrame(String string)
 	{
 		super(string);
+		
+		countdown.setCountdownListener(this);
 
 		initialize();
 		addUI();
@@ -94,8 +98,10 @@ public class NapFrame extends JFrame
 		btStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0)
 			{
+				int hours = Integer.parseInt(tbHours.getText());
+				int minutes = Integer.parseInt(tbMinutes.getText());
+				countdown.startCountdown(hours, minutes, 0);
 				System.out.println("button pressed");
-				System.out.println(tbHours.getText());
 			}
 		});
 		layers.add(btStart, JLayeredPane.PALETTE_LAYER);
@@ -115,5 +121,32 @@ public class NapFrame extends JFrame
 		tbMinutes.setFont(font);
 		tbMinutes.setText("0");
 		layers.add(tbMinutes, JLayeredPane.PALETTE_LAYER);
+	}
+
+	public void countdownTriggered()
+	{
+		System.out.println("countdown triggered!");
+		if(Main.IS_MAC)
+		{
+			try
+			{
+				System.out.println("sending this mac to sleep...");
+				String[] cmd = { "osascript", "-e",	"tell application \"System Events\" to sleep" };
+
+				Process p = Runtime.getRuntime().exec(cmd);
+				p.waitFor();
+				int returnCode = p.exitValue();
+				System.out.println("return code: " + returnCode);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void remainingMillis(long remainingMillis)
+	{
+		System.out.println(remainingMillis/1000 + " seconds remaining");		
 	}
 }

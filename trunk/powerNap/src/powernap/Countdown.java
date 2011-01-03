@@ -3,17 +3,17 @@ package powernap;
 public class Countdown
 {
 	private CountdownListener listener;
-	private long countdownEndMillis = Long.MAX_VALUE;
-	private Thread countdownThread;
+	private CountdownThread countdownThread;
 
 	public Countdown()
 	{
-		this.countdownThread = new Thread(new CountdownThread());
+		this.countdownThread = new CountdownThread();
 	}
 
 	public interface CountdownListener
 	{
-		void countdownElapsed();
+		void countdownTriggered();
+		void remainingMillis(long remainingMillis);
 	}
 
 	public void setCountdownListener(CountdownListener listener)
@@ -23,17 +23,37 @@ public class Countdown
 
 	private class CountdownThread implements Runnable
 	{
+		private boolean running = false;
+		private Thread thread;
+		private long countdownEndMillis = Long.MAX_VALUE;
+		
+		public void start()
+		{
+			if(!running)
+			{
+				thread = new Thread(this);
+				thread.start();
+			}
+		}
+		
 		public void run()
 		{
+			running = true;
 			for (;;)
 			{
-				if (System.currentTimeMillis() > countdownEndMillis)
+				long remainingMillis = countdownEndMillis - System.currentTimeMillis();
+				
+				if (remainingMillis <= 0)
 				{
 					if (listener != null)
 					{
-						listener.countdownElapsed();
+						listener.countdownTriggered();
 					}
 					break;
+				}
+				else
+				{
+					listener.remainingMillis(remainingMillis);
 				}
 				try
 				{
@@ -43,6 +63,12 @@ public class Countdown
 				{
 				}
 			}
+			running = false;
+		}
+
+		public void setEndMillis(long countdownEndMillis)
+		{
+			this.countdownEndMillis = countdownEndMillis;
 		}
 	}
 
@@ -54,9 +80,10 @@ public class Countdown
 		durationMillis += hours * 3600 * 1000;
 		durationMillis += minutes * 60 * 1000;
 		durationMillis += seconds * 1000;
-		
-		countdownEndMillis = nowMillis + durationMillis;
 
+		long countdownEndMillis = nowMillis + durationMillis;
+		
+		countdownThread.setEndMillis(countdownEndMillis);
 		countdownThread.start();
 	}
 }
