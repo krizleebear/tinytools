@@ -15,7 +15,7 @@ public class Main
 	{
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
-		final JFrame f = new NapFrame(APP_NAME);
+		JFrame f = new NapFrame(APP_NAME);
 		f.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);		
 		f.setSize(256, 276);
 		f.setResizable(false);
