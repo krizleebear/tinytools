@@ -10,14 +10,14 @@ public class Main
 {
 	public static void main(String[] args) throws Exception
 	{
-		System.out.println("running...");
+//		com.apple.eawt...
 
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
 		final JFrame f = new NapFrame("PowerNap");
 		f.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);		
 		f.setSize(256, 276);
-		f.setResizable(false);
+//		f.setResizable(false);
 		f.setVisible(true);
 		
 		f.addWindowListener(new WindowAdapter() {
