@@ -1,11 +1,11 @@
 <project name="osxproject" default="dist" basedir=".">
 
-	<property name="APP_NAME" value="Quitter" />
+	<property name="APP_NAME" value="PowerNap" />
 	<property name="JARBUNDLER_JAR" value="jarbundler-2.2.0/build/jarbundler-2.2.0.jar" />
-	<property name="MAINCLASS" value="osxproject.Main" />
+	<property name="MAINCLASS" value="powernap.Main" />
 
 	<tstamp>
-		<format property="TODAY" pattern="yyyyMMdd" />
+		<format property="TIMESTAMP" pattern="yyyyMMdd_hhmm" />
 	</tstamp>
 	
 	<!-- properties: basic -->
@@ -18,7 +18,7 @@
 	<property name="resource.dir" value="resources" />
 
 	<!-- properties: application-specific properties -->
-	<property name="jar-file-name" value="APP_NAME.jar" />
+	<property name="jar-file-name" value="${APP_NAME}.jar" />
 	<property name="mac.aboutname" value="${APP_NAME}" />
 
 	<!-- properties: jarbundler properties (mac-only) -->
@@ -26,13 +26,13 @@
 	<property name="jarbundler.shortname" value="${mac.aboutname}" />
 	<property name="jarbundler.mainclass" value="${MAINCLASS}" />
 	<property name="jarbundler.jvmversion" value="1.4+" />
-	<property name="jarbundler.version" value="0.10" />
+	<property name="jarbundler.version" value="${TIMESTAMP}" />
 	<property name="jarbundler.bundleid" value="${MAINCLASS}" />
 	<property name="jarbundler.icon" value="icon.icns" />
 
 	<property name="jarbundler.signature" value="" />
 	<property name="jarbundler.infostring" value="" />
-	<property name="jarbundler.build" value="${TODAY}" />
+	<property name="jarbundler.build" value="" />
 	<property name="jarbundler.apple.laf.useScreenMenuBar" value="true" />
 	<property name="jarbundler.apple.awt.brushMetal" value="true" />
 	<property name="jarbundler.apple.awt.showGrowBox" value="true" />
