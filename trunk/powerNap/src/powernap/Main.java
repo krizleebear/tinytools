@@ -14,11 +14,12 @@ public class Main
 
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
-		final JFrame f = new JFrame("PowerNap");
+		final JFrame f = new NapFrame("PowerNap");
 		f.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);		
-		f.setSize(256, 256);
+		f.setSize(256, 276);
 		f.setResizable(false);
 		f.setVisible(true);
+		
 		f.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent arg0)
 			{
