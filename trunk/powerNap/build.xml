@@ -7,11 +7,12 @@
 	<tstamp>
 		<format property="TIMESTAMP" pattern="yyyyMMdd_hhmm" />
 	</tstamp>
-	
+
 	<!-- properties: basic -->
 	<property name="build.dir" value="build" />
 	<property name="jar.dir" value="jar" />
 	<property name="lib.dir" value="lib" />
+	<property name="lib.compile.dir" value="lib" />
 	<property name="release.dir" value="release" />
 	<property name="src.dir" value="src" />
 	<property name="classes.dir" value="classes" />
@@ -58,13 +59,13 @@
 
 	<target name="clean">
 		<delete dir="${classes.dir}" />
-		<mkdir dir="${classes.dir}"/>
+		<mkdir dir="${classes.dir}" />
 		<!-- remove all the old jars from the jar directory -->
 		<delete dir="${jar.dir}" />
-		<mkdir dir="${jar.dir}"/>
+		<mkdir dir="${jar.dir}" />
 		<!-- remove the old version of the app -->
-		<delete dir="${release.dir}"/>
-		<mkdir dir="${release.dir}"/>
+		<delete dir="${release.dir}" />
+		<mkdir dir="${release.dir}" />
 	</target>
 
 	<!-- COMPILE -->
@@ -76,6 +77,7 @@
 			<exclude name="**/_*.java" />
 			<exclude name="**/Test*.java" />
 			<classpath refid="class.path" />
+			<classpath path="${lib.compile.dir}" />
 		</javac>
 	</target>
 
@@ -94,7 +96,7 @@
 		<!-- create the jar file from our compiled classes and manifest file -->
 		<jar basedir="${classes.dir}" jarfile="${jar.dir}/${jar-file-name}">
 			<manifest>
-				<attribute name="Main-Class" value="${MAINCLASS}"/>
+				<attribute name="Main-Class" value="${MAINCLASS}" />
 			</manifest>
 		</jar>
 
@@ -110,9 +112,11 @@
 	<!-- BUNDLE -->
 	<!-- mac/jar bundle: create our mac os x bundle based on our jar file, our libraries, and these properties -->
 	<target name="dist" depends="create-jar">
-		
-		<echoproperties></echoproperties>
-		
+
+		<!--
+		<echoproperties/>
+		-->
+
 		<jarbundler dir="${release.dir}" name="${jarbundler.name}" shortname="${jarbundler.shortname}" signature="${jarbundler.signature}" mainclass="${jarbundler.mainclass}" icon="${jarbundler.icon}" jvmversion="${jarbundler.jvmversion}" version="${jarbundler.version}" infostring="${jarbundler.infostring}" build="${jarbundler.build}" bundleid="${jarbundler.bundleid}">
 
 			<jarfileset dir="${jar.dir}">
