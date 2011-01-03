@@ -4,6 +4,7 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -108,20 +109,34 @@ public class NapFrame extends JFrame
 		});
 		layers.add(btStart, JLayeredPane.PALETTE_LAYER);
 
-		tbHours = new JTextField();
-		tbHours.setBorder(javax.swing.BorderFactory.createEmptyBorder());
-		tbHours.setForeground(Color.WHITE);
-		tbHours.setOpaque(false);
-		tbHours.setSize(50, 36);
-		tbHours.setLocation(55, 122);
+		Font font = new Font("Verdana", Font.BOLD, 18);
+		
+		tbHours = new NapTextfield();
+		tbHours.setSize(44, 36);
+		tbHours.setLocation(58, 122);
+		tbHours.setFont(font);
+		tbHours.setText("0");
 		layers.add(tbHours, JLayeredPane.PALETTE_LAYER);
 
-		tbMinutes = new JTextField();
-		tbMinutes.setBorder(javax.swing.BorderFactory.createEmptyBorder());
-		tbMinutes.setForeground(Color.WHITE);
-		tbMinutes.setOpaque(false);
-		tbMinutes.setSize(50, 36);
-		tbMinutes.setLocation(150, 122);
+		tbMinutes = new NapTextfield();
+		tbMinutes.setSize(44, 36);
+		tbMinutes.setLocation(153, 122);
+		tbMinutes.setFont(font);
+		tbMinutes.setText("0");
 		layers.add(tbMinutes, JLayeredPane.PALETTE_LAYER);
+	}
+	
+	class NapTextfield extends JTextField
+	{
+		private static final long serialVersionUID = 2797874554619229084L;
+
+		public NapTextfield()
+		{
+			super();
+			setBorder(javax.swing.BorderFactory.createEmptyBorder());
+			setForeground(Color.WHITE);
+			setOpaque(false);
+			setHorizontalAlignment(JTextField.CENTER);
+		}
 	}
 }
