@@ -31,34 +31,25 @@ public class NapFrame extends JFrame
 	private JTextField tbMinutes;
 	private JLayeredPane layers;
 
-	class TransparentButton extends JButton
-	{
-		private static final long serialVersionUID = 7639226803169238927L;
-
-		public TransparentButton(String text)
-		{
-			super(text);
-			setOpaque(false);
-		}
-
-		public void paint(Graphics g)
-		{
-			Graphics2D g2 = (Graphics2D) g.create();
-			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-					0.1f));
-			super.paint(g2);
-			g2.dispose();
-		}
-	}
-
 	public NapFrame(String string)
 	{
 		super(string);
 
 		initialize();
 		addUI();
+		
+		initOSX();
 
 		this.pack();
+	}
+
+	private void initOSX()
+	{
+		if(Main.IS_MAC)
+		{
+			System.setProperty("apple.laf.useScreenMenuBar", "true");
+			System.setProperty("com.apple.mrj.application.apple.menu.about.name", Main.APP_NAME);  
+		}
 	}
 
 	private void initialize()
@@ -94,7 +85,7 @@ public class NapFrame extends JFrame
 	{
 		layers = this.getLayeredPane();
 
-		btStart = new TransparentButton("");
+		btStart = new NapButton("");
 		btStart.setSize(146, 38);
 		btStart.setLocation(55, 182);
 		btStart.setContentAreaFilled(false);
@@ -124,19 +115,5 @@ public class NapFrame extends JFrame
 		tbMinutes.setFont(font);
 		tbMinutes.setText("0");
 		layers.add(tbMinutes, JLayeredPane.PALETTE_LAYER);
-	}
-	
-	class NapTextfield extends JTextField
-	{
-		private static final long serialVersionUID = 2797874554619229084L;
-
-		public NapTextfield()
-		{
-			super();
-			setBorder(javax.swing.BorderFactory.createEmptyBorder());
-			setForeground(Color.WHITE);
-			setOpaque(false);
-			setHorizontalAlignment(JTextField.CENTER);
-		}
 	}
 }
