@@ -27,6 +27,7 @@ public class Countdown
 		private Thread thread;
 		private long countdownEndMillis = Long.MAX_VALUE;
 		private long startMillis;
+		private long totalMillis;
 		
 		private void startThread()
 		{
@@ -42,7 +43,6 @@ public class Countdown
 			running = true;
 			for (;;)
 			{
-				long totalMillis = countdownEndMillis - startMillis;
 				long remainingMillis = countdownEndMillis - System.currentTimeMillis();
 				
 				if (remainingMillis <= 0)
@@ -79,6 +79,7 @@ public class Countdown
 			durationMillis += seconds * 1000;
 
 			countdownEndMillis = startMillis + durationMillis;
+			totalMillis = countdownEndMillis - startMillis;
 			
 			startThread();
 		}
