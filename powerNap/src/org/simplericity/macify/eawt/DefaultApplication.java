@@ -92,7 +92,6 @@ public class DefaultApplication implements Application
 		{
 			throw new RuntimeException(e);
 		}
-
 	}
 
 	public boolean isMac()
@@ -114,7 +113,6 @@ public class DefaultApplication implements Application
 
 	public void addApplicationListener(ApplicationListener applicationListener)
 	{
-
 		if (!Modifier.isPublic(applicationListener.getClass().getModifiers()))
 		{
 			throw new IllegalArgumentException(
