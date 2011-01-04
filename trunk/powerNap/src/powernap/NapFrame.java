@@ -12,6 +12,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.URL;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -90,23 +91,41 @@ public class NapFrame extends JFrame
 		imgPanel.setBounds(0, 0, icon.getIconWidth(), icon.getIconHeight());
 	}
 
+	public void setRunning(boolean running)
+	{
+		if(running)
+		{
+			URL url = this.getClass().getResource("powernap_button_running.gif");
+	        Icon icon = new ImageIcon(url);
+	        btStart.setIcon(icon);
+		}
+		else
+		{
+			URL url = this.getClass().getResource("powernap_button_start.gif");
+	        Icon icon = new ImageIcon(url);
+	        btStart.setIcon(icon);
+		}
+	}
+	
 	private void addUI()
 	{
 		layers = this.getLayeredPane();
 
-		btStart = new NapButton("");
+		btStart = new JButton("");
 		btStart.setSize(146, 38);
 		btStart.setLocation(55, 182);
 		btStart.setContentAreaFilled(false);
 		btStart.setOpaque(false);
 		btStart.setBorderPainted(false);
+		
+		URL url = this.getClass().getResource("powernap_button_start.gif");
+        Icon icon = new ImageIcon(url);
+        btStart.setIcon(icon);
+		
 		btStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0)
 			{
-				int hours = Integer.parseInt(tbHours.getText());
-				int minutes = Integer.parseInt(tbMinutes.getText());
-				
-				PowerNap.getInstance().startCountdown(hours, minutes);
+				buttonStartPressed();
 			}
 		});
 		layers.add(btStart, JLayeredPane.PALETTE_LAYER);
@@ -126,5 +145,20 @@ public class NapFrame extends JFrame
 		tbMinutes.setFont(font);
 		tbMinutes.setText("0");
 		layers.add(tbMinutes, JLayeredPane.PALETTE_LAYER);
+	}
+	
+	private void buttonStartPressed()
+	{
+		try
+		{
+			int hours = Integer.parseInt(tbHours.getText());
+			int minutes = Integer.parseInt(tbMinutes.getText());
+			setRunning(true);
+			PowerNap.getInstance().startCountdown(hours, minutes);
+		}
+		catch(NumberFormatException ex)
+		{
+			//ignore that exception. in future maybe color mark the input fields in some way
+		}		
 	}
 }

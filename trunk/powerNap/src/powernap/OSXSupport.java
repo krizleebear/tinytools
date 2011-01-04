@@ -68,6 +68,24 @@ public class OSXSupport implements ApplicationListener
 
 	    app.setApplicationIconImage(newIcon);
 	}
+	
+	public void standby()
+	{
+		try
+		{
+			System.out.println("sending this mac to sleep...");
+			String[] cmd = { "osascript", "-e",	"tell application \"System Events\" to sleep" };
+
+			Process p = Runtime.getRuntime().exec(cmd);
+			p.waitFor();
+			int returnCode = p.exitValue();
+			System.out.println("return code: " + returnCode);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
 
 	public void handleQuit(ApplicationEvent event)
 	{
@@ -98,4 +116,5 @@ public class OSXSupport implements ApplicationListener
 	public void handlePrintFile(ApplicationEvent event)
 	{
 	}
+
 }
