@@ -25,13 +25,17 @@ public class OSXSupport implements ApplicationListener
 		{
 			app = new DefaultApplication();
 			app.addApplicationListener(this);
-			originalIcon = app.getApplicationIconImage();
 		}
 	}
 	
 	int lastRenderedPercent = Integer.MIN_VALUE;
 	public void setProgress(int percent)
 	{
+		if(originalIcon==null)
+		{
+			originalIcon = app.getApplicationIconImage();	
+		}
+		
 		int diff = Math.abs(percent-lastRenderedPercent);
 		if(diff < 1)
 		{
