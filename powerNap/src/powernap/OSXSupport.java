@@ -29,7 +29,8 @@ public class OSXSupport implements ApplicationListener
 	}
 	
 	int lastRenderedPercent = Integer.MIN_VALUE;
-	public void setProgress(int percent)
+	
+	private void setProgress(int percent, boolean forceRedraw)
 	{
 		if(originalIcon==null)
 		{
@@ -37,12 +38,21 @@ public class OSXSupport implements ApplicationListener
 		}
 		
 		int diff = Math.abs(percent-lastRenderedPercent);
-		if(diff < 1)
+		if(diff < 1 && !forceRedraw)
 		{
 			//don't render as the difference to the last rendering is too small
 			return;
 		}
-		lastRenderedPercent = percent;
+		else
+		{
+			lastRenderedPercent = percent;
+		}
+		
+		if(percent == Integer.MIN_VALUE)
+		{
+			app.setApplicationIconImage(originalIcon);
+			return;
+		}
 
 		int iconWidth = originalIcon.getWidth();
 		int iconHeight = originalIcon.getHeight();
@@ -67,6 +77,16 @@ public class OSXSupport implements ApplicationListener
 	    graphics.dispose();
 
 	    app.setApplicationIconImage(newIcon);
+	}
+	
+	public void setProgress(int percent)
+	{
+		setProgress(percent, false);
+	}
+	
+	public void countdownTriggered()
+	{
+		setProgress(Integer.MIN_VALUE, true);
 	}
 	
 	public void standby()

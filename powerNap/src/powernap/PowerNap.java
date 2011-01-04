@@ -46,6 +46,7 @@ public class PowerNap implements CountdownListener
 	public void countdownTriggered()
 	{
 		gui.setRunning(false);
+		osx.countdownTriggered();
 		
 		standbyComputer();
 	}
