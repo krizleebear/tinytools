@@ -45,22 +45,20 @@ public class PowerNap implements CountdownListener
 	
 	public void countdownTriggered()
 	{
+		gui.setRunning(false);
+		
+		standbyComputer();
+	}
+
+	private void standbyComputer()
+	{
 		if(Main.IS_MAC)
 		{
-			try
-			{
-				System.out.println("sending this mac to sleep...");
-				String[] cmd = { "osascript", "-e",	"tell application \"System Events\" to sleep" };
-
-				Process p = Runtime.getRuntime().exec(cmd);
-				p.waitFor();
-				int returnCode = p.exitValue();
-				System.out.println("return code: " + returnCode);
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
+			osx.standby();
+		}
+		else
+		{
+			new Exception("not implemented for platforms other than OSX right now.").printStackTrace();
 		}
 	}
 

@@ -40,9 +40,9 @@ public class Countdown
 		public void run()
 		{
 			running = true;
-			long totalMillis = countdownEndMillis - startMillis;
 			for (;;)
 			{
+				long totalMillis = countdownEndMillis - startMillis;
 				long remainingMillis = countdownEndMillis - System.currentTimeMillis();
 				
 				if (remainingMillis <= 0)
