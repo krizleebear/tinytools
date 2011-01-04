@@ -13,7 +13,7 @@ public class Countdown
 	public interface CountdownListener
 	{
 		void countdownTriggered();
-		void remainingMillis(long remainingMillis);
+		void countdownChanged(int percent, long remainingMillis);
 	}
 
 	public void setCountdownListener(CountdownListener listener)
@@ -21,13 +21,14 @@ public class Countdown
 		this.listener = listener;
 	}
 
-	private class CountdownThread implements Runnable
+	class CountdownThread implements Runnable
 	{
 		private boolean running = false;
 		private Thread thread;
 		private long countdownEndMillis = Long.MAX_VALUE;
+		private long startMillis;
 		
-		public void start()
+		private void startThread()
 		{
 			if(!running)
 			{
@@ -39,6 +40,7 @@ public class Countdown
 		public void run()
 		{
 			running = true;
+			long totalMillis = countdownEndMillis - startMillis;
 			for (;;)
 			{
 				long remainingMillis = countdownEndMillis - System.currentTimeMillis();
@@ -53,7 +55,8 @@ public class Countdown
 				}
 				else
 				{
-					listener.remainingMillis(remainingMillis);
+					double percent = (((double)(totalMillis-remainingMillis))/(double)totalMillis) * 100.0;
+					listener.countdownChanged((int)percent, remainingMillis);
 				}
 				try
 				{
@@ -66,24 +69,23 @@ public class Countdown
 			running = false;
 		}
 
-		public void setEndMillis(long countdownEndMillis)
+		public void startCountdown(int hours, int minutes, int seconds)
 		{
-			this.countdownEndMillis = countdownEndMillis;
+			startMillis = System.currentTimeMillis();
+			
+			long durationMillis = 0;
+			durationMillis += hours * 3600 * 1000;
+			durationMillis += minutes * 60 * 1000;
+			durationMillis += seconds * 1000;
+
+			countdownEndMillis = startMillis + durationMillis;
+			
+			startThread();
 		}
 	}
 
 	public void startCountdown(int hours, int minutes, int seconds)
 	{
-		long nowMillis = System.currentTimeMillis();
-		
-		long durationMillis = 0;
-		durationMillis += hours * 3600 * 1000;
-		durationMillis += minutes * 60 * 1000;
-		durationMillis += seconds * 1000;
-
-		long countdownEndMillis = nowMillis + durationMillis;
-		
-		countdownThread.setEndMillis(countdownEndMillis);
-		countdownThread.start();
+		countdownThread.startCountdown(hours, minutes, seconds);
 	}
 }

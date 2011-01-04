@@ -19,20 +19,11 @@ import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.simplericity.macify.eawt.Application;
-import org.simplericity.macify.eawt.ApplicationEvent;
-import org.simplericity.macify.eawt.ApplicationListener;
-import org.simplericity.macify.eawt.DefaultApplication;
-
-import powernap.Countdown.CountdownListener;
-
-public class NapFrame extends JFrame implements CountdownListener, ApplicationListener
+public class NapFrame extends JFrame
 {
 	private static final long serialVersionUID = 1080928685148496207L;
 	private static final String BACKGROUND_IMAGE = "background.png";
 	
-	private Countdown countdown = new Countdown();
-
 	private Container contentPane;
 	private JPanel imgPanel;
 	private JButton btStart;
@@ -44,14 +35,13 @@ public class NapFrame extends JFrame implements CountdownListener, ApplicationLi
 	{
 		super(string);
 		
-		countdown.setCountdownListener(this);
-
-		initialize();
-		addUI();
-		
 		initOSX();
+		
+		initialize();
 
-		this.pack();
+		addUI();
+
+		pack();
 	}
 
 	private void initOSX()
@@ -59,10 +49,7 @@ public class NapFrame extends JFrame implements CountdownListener, ApplicationLi
 		if(Main.IS_MAC)
 		{
 			System.setProperty("apple.laf.useScreenMenuBar", "true");
-			System.setProperty("com.apple.mrj.application.apple.menu.about.name", Main.APP_NAME);
-			
-			Application application = new DefaultApplication();
-			application.addApplicationListener(this);
+			System.setProperty("com.apple.mrj.application.apple.menu.about.name", PowerNap.APP_NAME);
 			
 			addWindowListener(new WindowAdapter() {
 				public void windowClosing(WindowEvent arg0)
@@ -118,8 +105,8 @@ public class NapFrame extends JFrame implements CountdownListener, ApplicationLi
 			{
 				int hours = Integer.parseInt(tbHours.getText());
 				int minutes = Integer.parseInt(tbMinutes.getText());
-				countdown.startCountdown(hours, minutes, 0);
-				System.out.println("button pressed");
+				
+				PowerNap.getInstance().startCountdown(hours, minutes);
 			}
 		});
 		layers.add(btStart, JLayeredPane.PALETTE_LAYER);
@@ -139,63 +126,5 @@ public class NapFrame extends JFrame implements CountdownListener, ApplicationLi
 		tbMinutes.setFont(font);
 		tbMinutes.setText("0");
 		layers.add(tbMinutes, JLayeredPane.PALETTE_LAYER);
-	}
-
-	public void countdownTriggered()
-	{
-		if(Main.IS_MAC)
-		{
-			try
-			{
-				System.out.println("sending this mac to sleep...");
-				String[] cmd = { "osascript", "-e",	"tell application \"System Events\" to sleep" };
-
-				Process p = Runtime.getRuntime().exec(cmd);
-				p.waitFor();
-				int returnCode = p.exitValue();
-				System.out.println("return code: " + returnCode);
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		}
-	}
-
-	public void remainingMillis(long remainingMillis)
-	{
-		System.out.println(remainingMillis/1000 + " seconds remaining");		
-	}
-
-	public void handleAbout(ApplicationEvent event)
-	{
-	}
-
-	public void handleOpenApplication(ApplicationEvent event)
-	{
-	}
-
-	public void handleOpenFile(ApplicationEvent event)
-	{
-	}
-
-	public void handlePreferences(ApplicationEvent event)
-	{
-	}
-
-	public void handlePrintFile(ApplicationEvent event)
-	{
-	}
-
-	public void handleQuit(ApplicationEvent event)
-	{
-		//handle osx quit (cmd+q or dock-interaction)
-		System.exit(0);
-	}
-
-	public void handleReOpenApplication(ApplicationEvent event)
-	{
-		//reopening app means setVisible(true) on OSX
-		setVisible(true);
 	}
 }
