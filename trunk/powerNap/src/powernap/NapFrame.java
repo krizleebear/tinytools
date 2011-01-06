@@ -19,6 +19,7 @@ import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 public class NapFrame extends JFrame
 {
@@ -31,6 +32,7 @@ public class NapFrame extends JFrame
 	private JTextField tbHours;
 	private JTextField tbMinutes;
 	private JLayeredPane layers;
+	private boolean running;
 
 	public NapFrame(String string)
 	{
@@ -91,20 +93,28 @@ public class NapFrame extends JFrame
 		imgPanel.setBounds(0, 0, icon.getIconWidth(), icon.getIconHeight());
 	}
 
-	public void setRunning(boolean running)
+	public void setRunning(boolean runningFlag)
 	{
-		if(running)
-		{
-			URL url = this.getClass().getResource("powernap_button_running.gif");
-	        Icon icon = new ImageIcon(url);
-	        btStart.setIcon(icon);
-		}
-		else
-		{
-			URL url = this.getClass().getResource("powernap_button_start.gif");
-	        Icon icon = new ImageIcon(url);
-	        btStart.setIcon(icon);
-		}
+		this.running = runningFlag;
+		
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			public void run()
+			{
+				if(running)
+				{
+					URL url = this.getClass().getResource("powernap_button_running.gif");
+			        Icon icon = new ImageIcon(url);
+			        btStart.setIcon(icon);
+				}
+				else
+				{
+					URL url = this.getClass().getResource("powernap_button_start.gif");
+			        Icon icon = new ImageIcon(url);
+			        btStart.setIcon(icon);
+				}
+			}
+		});
 	}
 	
 	private void addUI()
@@ -125,7 +135,7 @@ public class NapFrame extends JFrame
 		btStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0)
 			{
-				buttonStartPressed();
+				buttonPressed();
 			}
 		});
 		layers.add(btStart, JLayeredPane.PALETTE_LAYER);
@@ -147,7 +157,25 @@ public class NapFrame extends JFrame
 		layers.add(tbMinutes, JLayeredPane.PALETTE_LAYER);
 	}
 	
-	private void buttonStartPressed()
+	private void buttonPressed()
+	{
+		if(running)
+		{
+			stopCountdown();
+		}
+		else
+		{
+			startCountdown();
+		}
+	}
+
+	private void stopCountdown()
+	{
+		PowerNap.getInstance().stopCountdown();
+		setRunning(false);
+	}
+
+	private void startCountdown()
 	{
 		try
 		{
@@ -159,6 +187,27 @@ public class NapFrame extends JFrame
 		catch(NumberFormatException ex)
 		{
 			//ignore that exception. in future maybe color mark the input fields in some way
-		}		
+		}
+	}
+
+	public void setHoursAndMinutes(final int hours, final int minutes)
+	{
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			public void run()
+			{
+				tbHours.setText(Integer.toString(hours));
+				tbMinutes.setText(Integer.toString(minutes));
+			}
+		});
+	}
+
+	public void setProgress(int percent, long remainingMillis)
+	{
+		int hours = (int) remainingMillis / 1000 / 3600;
+		int remainingMinuteMillis = (int) (remainingMillis - hours*1000*3600);
+		int minutes = remainingMinuteMillis/1000/60;
+		
+		setHoursAndMinutes(hours, minutes);
 	}
 }

@@ -21,6 +21,8 @@ public class PowerNap implements CountdownListener
 	
 	private PowerNap()
 	{
+		Settings settings = Settings.getInstance();
+		
 		osx.initialize();
 		
 		countdown.setCountdownListener(this);
@@ -30,17 +32,37 @@ public class PowerNap implements CountdownListener
 		gui.setSize(256, 276);
 		gui.setResizable(false);
 		gui.setVisible(true);
+		
+		gui.setHoursAndMinutes(settings.getHours(), settings.getMinutes());
 	}
 	
 	public void startCountdown(int hours, int minutes)
 	{
+		Settings settings = Settings.getInstance();
+		
+		settings.setHours(hours);
+		settings.setMinutes(minutes);
+		settings.save();
+		
 		countdown.startCountdown(hours, minutes, 0);
+		
+		osx.startCountdown();
+	}
+	
+	public void stopCountdown()
+	{
+		countdown.stop();
+		osx.stopCountdown();
+		
+		Settings settings = Settings.getInstance();
+		gui.setHoursAndMinutes(settings.getHours(), settings.getMinutes());
 	}
 
 	public void countdownChanged(int percent, long remainingMillis)
 	{
-		System.out.println(remainingMillis/1000 + " seconds remaining");
+//		System.out.println(remainingMillis/1000 + " seconds remaining");
 		osx.setProgress(percent);
+		gui.setProgress(percent, remainingMillis);
 	}
 	
 	public void countdownTriggered()

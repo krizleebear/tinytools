@@ -91,6 +91,16 @@ public class OSXSupport implements ApplicationListener
 		setProgress(Integer.MIN_VALUE, true);
 	}
 	
+	public void startCountdown()
+	{
+		setProgress(0, true);
+	}
+	
+	public void stopCountdown()
+	{
+		setProgress(Integer.MIN_VALUE, true);
+	}
+	
 	public void standby()
 	{
 		try
@@ -138,5 +148,4 @@ public class OSXSupport implements ApplicationListener
 	public void handlePrintFile(ApplicationEvent event)
 	{
 	}
-
 }

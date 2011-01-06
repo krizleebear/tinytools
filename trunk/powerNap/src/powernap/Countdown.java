@@ -41,7 +41,7 @@ public class Countdown
 		public void run()
 		{
 			running = true;
-			for (;;)
+			while (running)
 			{
 				long remainingMillis = countdownEndMillis - System.currentTimeMillis();
 				
@@ -83,10 +83,20 @@ public class Countdown
 			
 			startThread();
 		}
+
+		public void stop()
+		{
+			running = false;
+		}
 	}
 
 	public void startCountdown(int hours, int minutes, int seconds)
 	{
 		countdownThread.startCountdown(hours, minutes, seconds);
+	}
+
+	public void stop()
+	{
+		countdownThread.stop();
 	}
 }
