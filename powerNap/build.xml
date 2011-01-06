@@ -4,6 +4,8 @@
 	<property name="JARBUNDLER_JAR" value="jarbundler-2.2.0/build/jarbundler-2.2.0.jar" />
 	<property name="MAINCLASS" value="powernap.Main" />
 
+	<taskdef classname="net.bluecow.googlecode.ant.GoogleCodeUploadTask" classpath="ant-googlecode.jar" name="gcupload" />
+
 	<tstamp>
 		<format property="TIMESTAMP" pattern="yyyyMMdd_hhmm" />
 	</tstamp>
@@ -130,6 +132,28 @@
 			<javaproperty name="com.apple.mrj.application.apple.menu.about.name" value="${jarbundler.com.apple.mrj.application.apple.menu.about.name}" />
 			<javaproperty name="apple.awt.textantialiasing" value="${jarbundler.apple.awt.textantialiasing}" />
 		</jarbundler>
+	</target>
+	
+	<target name="getRevisionNumber">
+		<exec executable="bash" outputproperty="currentRevision" dir=".">
+			<arg value="-c"/>
+			<arg value="svn info | grep Revision | sed 's/Revision: /R/g'"/>
+		</exec>
+	</target>
+
+	<target name="uploadToGoogleCode" depends="dist, getRevisionNumber">
+		<zip destfile="${release.dir}/PowerNap.zip" basedir="${release.dir}">
+			<include name="*.app"/>
+		</zip>
+		<gcupload
+			username="${gc.username}"
+			password="${gc.password}"
+			projectname="tinytools"
+			filename="${release.dir}/PowerNap.zip"
+			targetfilename="PowerNap_${currentRevision}.zip"
+			summary="PowerNap ${currentRevision}. PowerNap sets your Mac (OSX) computer to sleep after a predefined while."
+			verbose="true"
+		/>
 	</target>
 
 </project>
