@@ -3,6 +3,7 @@ package powernap;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 
 import org.simplericity.macify.eawt.Application;
@@ -14,6 +15,7 @@ public class OSXSupport implements ApplicationListener
 {
 	private Application app = null;
 	private BufferedImage originalIcon;
+	public static int MENU_MASK = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 	
 	public OSXSupport()
 	{

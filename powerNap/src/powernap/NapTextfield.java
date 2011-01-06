@@ -10,10 +10,12 @@ public 	class NapTextfield extends JTextField
 
 	public NapTextfield()
 	{
+		
 		super();
 		setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		setForeground(Color.WHITE);
 		setOpaque(false);
 		setHorizontalAlignment(JTextField.CENTER);
 	}
+	
 }
