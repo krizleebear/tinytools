@@ -13,6 +13,7 @@ public class PowerNap implements CountdownListener
 	private Countdown countdown = new Countdown();
 	private OSXSupport osx = new OSXSupport(); 
 	private NapFrame gui = null;
+	private Settings settings = Settings.getInstance();
 	
 	public static PowerNap getInstance()
 	{
@@ -25,7 +26,7 @@ public class PowerNap implements CountdownListener
 		
 		osx.initialize();
 		
-		countdown.setCountdownListener(this);
+		addCountdownListener(this);
 		
 		gui = new NapFrame(APP_NAME);
 		gui.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);		
@@ -34,6 +35,11 @@ public class PowerNap implements CountdownListener
 		gui.setVisible(true);
 		
 		gui.setHoursAndMinutes(settings.getHours(), settings.getMinutes());
+	}
+	
+	public void addCountdownListener(CountdownListener listener)
+	{
+		countdown.addCountdownListener(listener);
 	}
 	
 	public void startCountdown(int hours, int minutes)
@@ -53,9 +59,6 @@ public class PowerNap implements CountdownListener
 	{
 		countdown.stop();
 		osx.stopCountdown();
-		
-		Settings settings = Settings.getInstance();
-		gui.setHoursAndMinutes(settings.getHours(), settings.getMinutes());
 	}
 
 	public void countdownChanged(int percent, long remainingMillis)
@@ -71,6 +74,11 @@ public class PowerNap implements CountdownListener
 		osx.countdownTriggered();
 		
 		standbyComputer();
+	}
+	
+	public void countdownStopped()
+	{
+		gui.setHoursAndMinutes(settings.getHours(), settings.getMinutes());
 	}
 
 	private void standbyComputer()
