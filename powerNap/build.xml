@@ -1,5 +1,7 @@
 <project name="osxproject" default="dist" basedir=".">
 
+	<property file="build.credentials.properties" />
+
 	<property name="APP_NAME" value="PowerNap" />
 	<property name="JARBUNDLER_JAR" value="jarbundler-2.2.0/build/jarbundler-2.2.0.jar" />
 	<property name="MAINCLASS" value="powernap.Main" />
@@ -133,22 +135,25 @@
 			<javaproperty name="apple.awt.textantialiasing" value="${jarbundler.apple.awt.textantialiasing}" />
 		</jarbundler>
 	</target>
-	
+
 	<target name="getRevisionNumber">
 		<exec executable="bash" outputproperty="currentRevision" dir=".">
-			<arg value="-c"/>
-			<arg value="svn info | grep Revision | sed 's/Revision: /R/g'"/>
+			<arg value="-c" />
+			<arg value="svn info | grep Revision | sed 's/Revision: /R/g'" />
 		</exec>
 	</target>
 
 	<target name="uploadToGoogleCode" depends="dist, getRevisionNumber">
-		<delete file="PowerNap*.zip" />
-		<zip destfile="${release.dir}/PowerNap_${currentRevision}.zip">
-			<fileset dir="${release.dir}">
-				<exclude name="*.zip"/>
-			</fileset>
-		</zip>
-	<!--	
+		<delete file="PowerNap*.tar.gz" />
+		<tar destfile="${release.dir}/PowerNap_${currentRevision}.tar.gz" compression="gzip">
+			<tarfileset dir="${release.dir}">
+				<exclude name="*.tar.gz" />
+			</tarfileset>
+			<tarfileset dir="${release.dir}" filemode="755">
+				<include name="**/JavaApplicationStub"/>
+			</tarfileset>
+		</tar>
+		<!--	
 		<gcupload
 			username="${gc.username}"
 			password="${gc.password}"
