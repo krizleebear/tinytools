@@ -119,7 +119,7 @@
 		<echoproperties/>
 		-->
 
-		<jarbundler dir="${release.dir}" name="${jarbundler.name}" shortname="${jarbundler.shortname}" signature="${jarbundler.signature}" mainclass="${jarbundler.mainclass}" icon="${jarbundler.icon}" jvmversion="${jarbundler.jvmversion}" version="${jarbundler.version}" infostring="${jarbundler.infostring}" build="${jarbundler.build}" bundleid="${jarbundler.bundleid}">
+		<jarbundler dir="${release.dir}" name="${jarbundler.name}" shortname="${jarbundler.shortname}" signature="${jarbundler.signature}" mainclass="${jarbundler.mainclass}" icon="${jarbundler.icon}" jvmversion="${jarbundler.jvmversion}" version="${jarbundler.version}" infostring="${jarbundler.infostring}" build="${jarbundler.build}" bundleid="${APP_NAME}">
 
 			<jarfileset dir="${jar.dir}">
 				<include name="**/*.jar" />
@@ -142,9 +142,13 @@
 	</target>
 
 	<target name="uploadToGoogleCode" depends="dist, getRevisionNumber">
-		<zip destfile="${release.dir}/PowerNap.zip" basedir="${release.dir}">
-			<include name="*.app"/>
+		<delete file="PowerNap*.zip" />
+		<zip destfile="${release.dir}/PowerNap_${currentRevision}.zip">
+			<fileset dir="${release.dir}">
+				<exclude name="*.zip"/>
+			</fileset>
 		</zip>
+	<!--	
 		<gcupload
 			username="${gc.username}"
 			password="${gc.password}"
@@ -154,6 +158,7 @@
 			summary="PowerNap ${currentRevision}. PowerNap sets your Mac (OSX) computer to sleep after a predefined while."
 			verbose="true"
 		/>
+		-->
 	</target>
 
 </project>
