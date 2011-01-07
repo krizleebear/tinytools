@@ -1,4 +1,4 @@
-<project name="osxproject" default="dist" basedir=".">
+<project name="osxproject" default="deploy" basedir=".">
 
 	<property file="build.credentials.properties" />
 
@@ -84,6 +84,10 @@
 			<classpath path="${lib.compile.dir}" />
 		</javac>
 	</target>
+	
+	<target name="deploy" depends="clean, create-jar, packageOSX">
+		
+	</target>
 
 	<!-- CREATE-JAR -->
 	<target name="create-jar" depends="compile">
@@ -115,25 +119,29 @@
 
 	<!-- BUNDLE -->
 	<!-- mac/jar bundle: create our mac os x bundle based on our jar file, our libraries, and these properties -->
-	<target name="dist" depends="create-jar">
-
-		<!--
-		<echoproperties/>
-		-->
-
-		<jarbundler dir="${release.dir}" name="${jarbundler.name}" shortname="${jarbundler.shortname}" signature="${jarbundler.signature}" mainclass="${jarbundler.mainclass}" icon="${jarbundler.icon}" jvmversion="${jarbundler.jvmversion}" version="${jarbundler.version}" infostring="${jarbundler.infostring}" build="${jarbundler.build}" bundleid="${APP_NAME}">
-
+	<target name="packageOSX" depends="create-jar, getRevisionNumber">
+		<delete dir="${release.dir}/${APP_NAME}.app"/>
+		<delete file="${APP_NAME}*_MacOSX.tar.gz" />
+		<jarbundler dir="${release.dir}" name="${jarbundler.name}" shortname="${jarbundler.shortname}" signature="${jarbundler.signature}" mainclass="${jarbundler.mainclass}" icon="${jarbundler.icon}" jvmversion="${jarbundler.jvmversion}" version="${jarbundler.version}" infostring="${jarbundler.infostring}" build="${jarbundler.build}" bundleid="${APP_NAME}" stubfile="${APP_NAME}">
 			<jarfileset dir="${jar.dir}">
 				<include name="**/*.jar" />
 				<exclude name="**/CVS" />
 			</jarfileset>
-
 			<javaproperty name="apple.laf.useScreenMenuBar" value="${jarbundler.apple.laf.useScreenMenuBar}" />
 			<javaproperty name="apple.awt.brushMetal" value="${jarbundler.apple.awt.brushMetal}" />
 			<javaproperty name="apple.awt.showGrowBox" value="${jarbundler.apple.awt.showGrowBox}" />
 			<javaproperty name="com.apple.mrj.application.apple.menu.about.name" value="${jarbundler.com.apple.mrj.application.apple.menu.about.name}" />
 			<javaproperty name="apple.awt.textantialiasing" value="${jarbundler.apple.awt.textantialiasing}" />
 		</jarbundler>
+		<property name="deploy.osx.filename" value="${APP_NAME}_${currentRevision}_MacOSX.tar.gz"/>
+		<tar destfile="${release.dir}/${deploy.osx.filename}" compression="gzip">
+			<tarfileset dir="${release.dir}">
+				<exclude name="*.tar.gz" />
+			</tarfileset>
+			<tarfileset dir="${release.dir}" filemode="755">
+				<include name="**/Contents/MacOS/**"/>
+			</tarfileset>
+		</tar>
 	</target>
 
 	<target name="getRevisionNumber">
@@ -144,25 +152,13 @@
 		<echo>${currentRevision}</echo>
 	</target>
 
-	<target name="uploadToGoogleCode" depends="dist, getRevisionNumber">
-		<delete file="${APP_NAME}*.tar.gz" />
-		
-		<property name="deploy.filename" value="${APP_NAME}_${currentRevision}.tar.gz"/>
-		
-		<tar destfile="${release.dir}/${deploy.filename}" compression="gzip">
-			<tarfileset dir="${release.dir}">
-				<exclude name="*.tar.gz" />
-			</tarfileset>
-			<tarfileset dir="${release.dir}" filemode="755">
-				<include name="**/JavaApplicationStub"/>
-			</tarfileset>
-		</tar>
+	<target name="uploadToGoogleCode" depends="deploy">
 		<gcupload
 			username="${gc.username}"
 			password="${gc.password}"
-			projectname="tinytools"
-			filename="${release.dir}/${deploy.filename}"
-			targetfilename="${deploy.filename}"
+			projectname="${gc.projectname}"
+			filename="${release.dir}/${deploy.osx.filename}"
+			targetfilename="${deploy.osx.filename}"
 			summary="${gc.summary}"
 			labels="${gc.labels}"
 			verbose="true"
