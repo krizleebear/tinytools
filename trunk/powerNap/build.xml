@@ -139,7 +139,7 @@
 	<target name="getRevisionNumber">
 		<exec executable="bash" outputproperty="currentRevision" dir=".">
 			<arg value="-c" />
-			<arg value="svn update; svn info | grep Revision | sed 's/Revision: /R/g'" />
+			<arg value="svn update > /dev/null; svn info | grep Revision | sed 's/Revision: /R/g'" />
 		</exec>
 		<echo>${currentRevision}</echo>
 	</target>
@@ -148,7 +148,6 @@
 		<delete file="${APP_NAME}*.tar.gz" />
 		
 		<property name="deploy.filename" value="${APP_NAME}_${currentRevision}.tar.gz"/>
-
 		
 		<tar destfile="${release.dir}/${deploy.filename}" compression="gzip">
 			<tarfileset dir="${release.dir}">
