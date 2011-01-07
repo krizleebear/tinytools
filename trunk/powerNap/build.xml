@@ -139,8 +139,9 @@
 	<target name="getRevisionNumber">
 		<exec executable="bash" outputproperty="currentRevision" dir=".">
 			<arg value="-c" />
-			<arg value="svn info | grep Revision | sed 's/Revision: /R/g'" />
+			<arg value="svn update; svn info | grep Revision | sed 's/Revision: /R/g'" />
 		</exec>
+		<echo>${currentRevision}</echo>
 	</target>
 
 	<target name="uploadToGoogleCode" depends="dist, getRevisionNumber">
