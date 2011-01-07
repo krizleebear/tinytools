@@ -144,8 +144,12 @@
 	</target>
 
 	<target name="uploadToGoogleCode" depends="dist, getRevisionNumber">
-		<delete file="PowerNap*.tar.gz" />
-		<tar destfile="${release.dir}/PowerNap_${currentRevision}.tar.gz" compression="gzip">
+		<delete file="${APP_NAME}*.tar.gz" />
+		
+		<property name="deploy.filename" value="${APP_NAME}_${currentRevision}.tar.gz"/>
+
+		
+		<tar destfile="${release.dir}/${deploy.filename}" compression="gzip">
 			<tarfileset dir="${release.dir}">
 				<exclude name="*.tar.gz" />
 			</tarfileset>
@@ -153,17 +157,16 @@
 				<include name="**/JavaApplicationStub"/>
 			</tarfileset>
 		</tar>
-		<!--	
 		<gcupload
 			username="${gc.username}"
 			password="${gc.password}"
 			projectname="tinytools"
-			filename="${release.dir}/PowerNap.zip"
-			targetfilename="PowerNap_${currentRevision}.zip"
-			summary="PowerNap ${currentRevision}. PowerNap sets your Mac (OSX) computer to sleep after a predefined while."
+			filename="${release.dir}/${deploy.filename}"
+			targetfilename="${deploy.filename}"
+			summary="${gc.summary}"
+			labels="${gc.labels}"
 			verbose="true"
 		/>
-		-->
 	</target>
 
 </project>
