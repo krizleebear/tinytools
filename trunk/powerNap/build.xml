@@ -84,9 +84,9 @@
 			<classpath path="${lib.compile.dir}" />
 		</javac>
 	</target>
-	
-	<target name="deploy" depends="clean, create-jar, packageOSX">
-		
+
+	<target name="deploy" depends="clean, create-jar, packageOSX, packageWindows">
+
 	</target>
 
 	<!-- CREATE-JAR -->
@@ -120,7 +120,7 @@
 	<!-- BUNDLE -->
 	<!-- mac/jar bundle: create our mac os x bundle based on our jar file, our libraries, and these properties -->
 	<target name="packageOSX" depends="create-jar, getRevisionNumber">
-		<delete dir="${release.dir}/${APP_NAME}.app"/>
+		<delete dir="${release.dir}/${APP_NAME}.app" />
 		<delete file="${APP_NAME}*_MacOSX.tar.gz" />
 		<jarbundler dir="${release.dir}" name="${jarbundler.name}" shortname="${jarbundler.shortname}" signature="${jarbundler.signature}" mainclass="${jarbundler.mainclass}" icon="${jarbundler.icon}" jvmversion="${jarbundler.jvmversion}" version="${jarbundler.version}" infostring="${jarbundler.infostring}" build="${jarbundler.build}" bundleid="${APP_NAME}" stubfile="${APP_NAME}">
 			<jarfileset dir="${jar.dir}">
@@ -133,15 +133,27 @@
 			<javaproperty name="com.apple.mrj.application.apple.menu.about.name" value="${jarbundler.com.apple.mrj.application.apple.menu.about.name}" />
 			<javaproperty name="apple.awt.textantialiasing" value="${jarbundler.apple.awt.textantialiasing}" />
 		</jarbundler>
-		<property name="deploy.osx.filename" value="${APP_NAME}_${currentRevision}_MacOSX.tar.gz"/>
+		<property name="deploy.osx.filename" value="${APP_NAME}_${currentRevision}_MacOSX.tar.gz" />
 		<tar destfile="${release.dir}/${deploy.osx.filename}" compression="gzip">
 			<tarfileset dir="${release.dir}">
 				<exclude name="*.tar.gz" />
 			</tarfileset>
 			<tarfileset dir="${release.dir}" filemode="755">
-				<include name="**/Contents/MacOS/**"/>
+				<include name="**/Contents/MacOS/**" />
 			</tarfileset>
 		</tar>
+	</target>
+
+	<target name="packageWindows" depends="create-jar, getRevisionNumber">
+		<property name="deploy.win.filename" value="${APP_NAME}_${currentRevision}_Win.zip" />
+		<zip destfile="${release.dir}/${deploy.win.filename}">
+			<zipfileset dir="${jar.dir}">
+				<include name="*.jar" />
+			</zipfileset>
+			<zipfileset dir=".">
+				<include name="PowerNap.bat" />
+			</zipfileset>
+		</zip>
 	</target>
 
 	<target name="getRevisionNumber">
@@ -153,16 +165,7 @@
 	</target>
 
 	<target name="uploadToGoogleCode" depends="deploy">
-		<gcupload
-			username="${gc.username}"
-			password="${gc.password}"
-			projectname="${gc.projectname}"
-			filename="${release.dir}/${deploy.osx.filename}"
-			targetfilename="${deploy.osx.filename}"
-			summary="${gc.summary}"
-			labels="${gc.labels}"
-			verbose="true"
-		/>
+		<gcupload username="${gc.username}" password="${gc.password}" projectname="${gc.projectname}" filename="${release.dir}/${deploy.osx.filename}" targetfilename="${deploy.osx.filename}" summary="${gc.summary}" labels="${gc.labels}" verbose="true" />
+		<gcupload username="${gc.username}" password="${gc.password}" projectname="${gc.projectname}" filename="${release.dir}/${deploy.osx.filename}" targetfilename="${deploy.win.filename}" summary="${gc.summary}" labels="${gc.labels}" verbose="true" />
 	</target>
-
 </project>
