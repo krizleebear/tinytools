@@ -49,11 +49,8 @@ public class NapFrame extends JFrame
 
 	private void initOSX()
 	{
-		if(Main.IS_MAC)
+		if(Main.isMac())
 		{
-			System.setProperty("apple.laf.useScreenMenuBar", "true");
-			System.setProperty("com.apple.mrj.application.apple.menu.about.name", PowerNap.APP_NAME);
-			
 			addWindowListener(new WindowAdapter() {
 				public void windowClosing(WindowEvent arg0)
 				{

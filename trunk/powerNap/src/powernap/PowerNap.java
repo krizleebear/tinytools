@@ -1,7 +1,5 @@
 package powernap;
 
-import javax.swing.JFrame;
-
 import powernap.Countdown.CountdownListener;
 
 public class PowerNap implements CountdownListener
@@ -11,7 +9,7 @@ public class PowerNap implements CountdownListener
 	private static PowerNap instance = new PowerNap();
 	
 	private Countdown countdown = new Countdown();
-	private OSXSupport osx = new OSXSupport(); 
+	private IOSAL osal;
 	private NapFrame gui = null;
 	private Settings settings = Settings.getInstance();
 	
@@ -24,17 +22,24 @@ public class PowerNap implements CountdownListener
 	{
 		Settings settings = Settings.getInstance();
 		
-		osx.initialize();
-		
 		addCountdownListener(this);
 		
 		gui = new NapFrame(APP_NAME);
-		gui.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);		
 		gui.setSize(256, 276);
 		gui.setResizable(false);
 		gui.setVisible(true);
-		
 		gui.setHoursAndMinutes(settings.getHours(), settings.getMinutes());
+	}
+	
+	public void init()
+	{
+		osal = OSALFactory.getOSAL();
+		osal.initialize();
+	}
+	
+	public void setWindowCloseOperation(int jframeCloseOperation)
+	{
+		gui.setDefaultCloseOperation(jframeCloseOperation);
 	}
 	
 	public void addCountdownListener(CountdownListener listener)
@@ -52,26 +57,26 @@ public class PowerNap implements CountdownListener
 		
 		countdown.startCountdown(hours, minutes, 0);
 		
-		osx.startCountdown();
+		osal.startCountdown();
 	}
 	
 	public void stopCountdown()
 	{
 		countdown.stop();
-		osx.stopCountdown();
+		osal.stopCountdown();
 	}
 
 	public void countdownChanged(int percent, long remainingMillis)
 	{
 //		System.out.println(remainingMillis/1000 + " seconds remaining");
-		osx.setProgress(percent);
+		osal.setProgress(percent);
 		gui.setProgress(percent, remainingMillis);
 	}
 	
 	public void countdownTriggered()
 	{
 		gui.setRunning(false);
-		osx.countdownTriggered();
+		osal.countdownTriggered();
 		
 		standbyComputer();
 	}
@@ -83,14 +88,7 @@ public class PowerNap implements CountdownListener
 
 	private void standbyComputer()
 	{
-		if(Main.IS_MAC)
-		{
-			osx.standby();
-		}
-		else
-		{
-			new Exception("not implemented for platforms other than OSX right now.").printStackTrace();
-		}
+		osal.standby();
 	}
 
 	public void quit()

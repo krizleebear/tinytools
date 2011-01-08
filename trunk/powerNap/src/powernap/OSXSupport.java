@@ -6,12 +6,14 @@ import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 
+import javax.swing.JFrame;
+
 import org.simplericity.macify.eawt.Application;
 import org.simplericity.macify.eawt.ApplicationEvent;
 import org.simplericity.macify.eawt.ApplicationListener;
 import org.simplericity.macify.eawt.DefaultApplication;
 
-public class OSXSupport implements ApplicationListener
+public class OSXSupport implements ApplicationListener, IOSAL
 {
 	private Application app = null;
 	private BufferedImage originalIcon;
@@ -23,11 +25,12 @@ public class OSXSupport implements ApplicationListener
 	
 	public void initialize()
 	{
-		if(Main.IS_MAC)
-		{
-			app = new DefaultApplication();
-			app.addApplicationListener(this);
-		}
+		System.setProperty("apple.laf.useScreenMenuBar", "true");
+		System.setProperty("com.apple.mrj.application.apple.menu.about.name", PowerNap.APP_NAME);
+		
+		PowerNap.getInstance().setWindowCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		app = new DefaultApplication();
+		app.addApplicationListener(this);
 	}
 	
 	int lastRenderedPercent = Integer.MIN_VALUE;
