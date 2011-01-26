@@ -171,13 +171,11 @@ public class NapFrame extends JFrame
 		}
 	}
 	
-	private KeyListener textBoxKeyListener = new KeyListener() {
-		@Override
+	private KeyListener textBoxKeyListener = new KeyListener() 
+	{
 		public void keyPressed(KeyEvent arg0)
 		{
 		}
-
-		@Override
 		public void keyReleased(KeyEvent arg0)
 		{
 			if (arg0.getKeyCode() == KeyEvent.VK_ENTER)
@@ -185,8 +183,6 @@ public class NapFrame extends JFrame
 				startCountdown();
 			}
 		}
-
-		@Override
 		public void keyTyped(KeyEvent arg0)
 		{
 		}
