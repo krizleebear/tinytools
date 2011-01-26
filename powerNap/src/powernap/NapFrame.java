@@ -8,6 +8,8 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.URL;
@@ -144,6 +146,8 @@ public class NapFrame extends JFrame
 		tbHours.setLocation(58, 122);
 		tbHours.setFont(font);
 		tbHours.setText("0");
+		
+		tbHours.addKeyListener(textBoxKeyListener);
 		layers.add(tbHours, JLayeredPane.PALETTE_LAYER);
 
 		tbMinutes = new NapTextfield();
@@ -151,6 +155,7 @@ public class NapFrame extends JFrame
 		tbMinutes.setLocation(153, 122);
 		tbMinutes.setFont(font);
 		tbMinutes.setText("0");
+		tbMinutes.addKeyListener(textBoxKeyListener);
 		layers.add(tbMinutes, JLayeredPane.PALETTE_LAYER);
 	}
 	
@@ -165,6 +170,27 @@ public class NapFrame extends JFrame
 			startCountdown();
 		}
 	}
+	
+	private KeyListener textBoxKeyListener = new KeyListener() {
+		@Override
+		public void keyPressed(KeyEvent arg0)
+		{
+		}
+
+		@Override
+		public void keyReleased(KeyEvent arg0)
+		{
+			if (arg0.getKeyCode() == KeyEvent.VK_ENTER)
+			{
+				startCountdown();
+			}
+		}
+
+		@Override
+		public void keyTyped(KeyEvent arg0)
+		{
+		}
+	};
 
 	private void stopCountdown()
 	{
