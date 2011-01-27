@@ -75,7 +75,8 @@ public class PowerNap implements CountdownListener
 	
 	public void countdownTriggered()
 	{
-		gui.setRunning(false);
+		gui.countdownTriggered();
+		gui.setHoursAndMinutes(settings.getHours(), settings.getMinutes());
 		osal.countdownTriggered();
 		
 		standbyComputer();
