@@ -229,4 +229,9 @@ public class NapFrame extends JFrame
 		
 		setHoursAndMinutes(hours, minutes);
 	}
+
+	public void countdownTriggered()
+	{
+		setRunning(false);
+	}
 }
