@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<overlay id="sample" 
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+         
+	<script>
+	
+		function getBrowserWindow()
+		{
+	   		return Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator).getMostRecentWindow('navigator:browser');
+		}
+		
+		function openLink(url) 
+		{
+		    var wnd = getBrowserWindow();
+      		wnd.gBrowser.selectedTab = wnd.gBrowser.addTab(url);
+    	}
+	
+		function startFS()
+		{
+			//alert('0');
+			openLink("chrome://firescribbles/content/firescribbles.html");
+			//openAndReuseOneTabPerURL("http://www.google.de");
+		}
+		
+	</script>
+         
+	<statusbar id="status-bar">
+		<statusbarpanel id="my-panel" label="FireScribbles" onclick="startFS()" />
+	</statusbar>
+</overlay>
