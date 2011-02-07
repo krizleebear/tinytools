@@ -1,0 +1,2 @@
+content     firescribbles    chrome/content/
+overlay		chrome://browser/content/browser.xul	chrome://firescribbles/content/firescribbles.xul

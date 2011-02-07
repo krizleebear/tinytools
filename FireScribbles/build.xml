@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="project" default="deploy">
+
+	<property name="OUT_FILE" value="firescribbles.xpi"/>
+	
+	<target name="deploy" description="description">
+		<delete file="${OUT_FILE}"/>
+        <zip destfile="${OUT_FILE}">
+        	<fileset dir="src">
+        		<include name="**/*"/>
+        	</fileset>
+        </zip>
+    </target>
+
+</project>
