@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="timelog" default="jar" basedir=".">
+
+	<property name="APP_NAME" value="timelog" />
+	<property name="MAINCLASS" value="de.christianleberfinger.timelog.MainTimelog" />
+
+	<property name="jar.dir" value="jar" />
+	<property name="lib.dir" value="lib" />
+	<property name="lib.compile.dir" value="lib" />
+	<property name="release.dir" value="release" />
+	<property name="src.dir" value="src" />
+	<property name="classes.dir" value="classes" />
+	<property name="jar-file-name" value="${APP_NAME}.jar" />
+
+	<path id="class.path">
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar" />
+			<include name="**/*.zip" />
+		</fileset>
+	</path>
+
+	<target name="clean">
+		<delete dir="${classes.dir}" />
+		<mkdir dir="${classes.dir}" />
+		<!-- remove all the old jars from the jar directory -->
+		<delete dir="${jar.dir}" />
+		<mkdir dir="${jar.dir}" />
+		<!-- remove the old version of the app -->
+		<delete dir="${release.dir}" />
+		<mkdir dir="${release.dir}" />
+	</target>
+
+	<target name="compile" depends="clean">
+		<javac destdir="${classes.dir}" source="1.8" includeAntRuntime="false">
+			<src path="${src.dir}" />
+			<classpath refid="class.path" />
+			<classpath path="${lib.compile.dir}" />
+		</javac>
+	</target>
+
+	<target name="jar" depends="compile">
+
+		<!-- copy any image/resource files in our src directories to the same "classes" directory -->
+		<copy todir="${classes.dir}">
+			<fileset dir="${src.dir}">
+				<include name="**/*.gif" />
+				<include name="**/*.jpg" />
+				<include name="**/*.png" />
+			</fileset>
+		</copy>
+
+		<!-- create the jar file from our compiled classes and manifest file -->
+		<jar basedir="${classes.dir}" jarfile="${jar.dir}/${jar-file-name}">
+			<manifest>
+				<attribute name="Main-Class" value="${MAINCLASS}" />
+				<!-- if several JARs have to be included, separate them by spaces, not colons! -->
+				<attribute name="Class-Path" value="jna.jar jna-platform.jar" />
+			</manifest>
+		</jar>
+
+		<!-- copy any libraries our application depends on -->
+		<copy todir="${jar.dir}">
+			<fileset dir="${lib.dir}">
+				<include name="**/*.jar" />
+				<include name="**/*.zip" />
+			</fileset>
+		</copy>
+	</target>
+
+
+</project>
